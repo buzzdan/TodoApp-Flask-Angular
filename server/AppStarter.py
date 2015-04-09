@@ -6,9 +6,10 @@ from server.ApiResources.Todo import Todo
 
 class AppStarter():
 
-    def __init__(self):
+    def __init__(self, config_name):
         self._static_files_root_folder_path = ''  # Default is current folder
         self._app = Flask(__name__)  # , static_folder='client', static_url_path='')
+        self._app.config.from_object(config_name)
         self._api = Api(self._app)
 
     def _register_static_server(self, static_files_root_folder_path):
