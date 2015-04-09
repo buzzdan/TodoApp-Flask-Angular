@@ -1,11 +1,15 @@
 class TodoTask:
     _id_counter = 1
 
-    def __init__(self, task_name):
+    def __init__(self, task_name, todo_id=None):
         self.validate(task_name)
         self._task_name = task_name
-        self._id = str(TodoTask._id_counter)
-        TodoTask._id_counter += 1
+
+        if todo_id is None:
+            self._id = str(TodoTask._id_counter)
+            TodoTask._id_counter += 1
+        else:
+            self._id = todo_id
 
     def get_id(self):
         return self._id

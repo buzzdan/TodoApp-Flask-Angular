@@ -1,21 +1,14 @@
 from server.Entities.TodoTask import TodoTask
+from server.Repositories.ITodoRepository import ITodoRepository
 from server.Utils.Maybe import Maybe
 
 
-class TodoRepository:
+class InMemoryTodoRepository(ITodoRepository):
 
     _todos = [TodoTask('build an API'), TodoTask('shop soy milk'), TodoTask('study python')]
 
-
-    #_todo_db = {todo.get_id(): todo for todo in _todos}
-    # _todo_db = {
-    #     'todo1': {'task': 'build an API'},
-    #     'todo2': {'task': '?????'},
-    #     'todo3': {'task': 'profit!'},
-    # }
-
     def __init__(self):
-        self._todo_db = TodoRepository._todos
+        self._todo_db = InMemoryTodoRepository._todos
 
     def get_all(self):
         return self._todo_db

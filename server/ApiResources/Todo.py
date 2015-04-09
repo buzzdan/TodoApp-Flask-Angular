@@ -1,13 +1,13 @@
 from flask_restful import reqparse, abort, Resource
 from server.ApiResources.DTOs.TodoDTO import TodoDTO
-from server.Repositories.TodoRepository import TodoRepository
+from server.Repositories.InMemoryTodoRepository import InMemoryTodoRepository
 
 
 class Todo(Resource):
     """shows a single todo item and lets you delete a todo item
     """
     def __init__(self):
-        self.todo_repository = TodoRepository()
+        self.todo_repository = InMemoryTodoRepository()
         self._parser = reqparse.RequestParser()
         self._parser.add_argument('task', type=str)
 

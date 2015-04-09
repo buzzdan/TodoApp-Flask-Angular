@@ -20,6 +20,7 @@ flask_runner = app.get_flask_runner()  # flask app instance for gunicorn
 
 
 def runserver():
+    print('All set! Ruuuuuuuuunnnnning !')
     app.run()
 
 if __name__ == '__main__':

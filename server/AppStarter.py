@@ -1,5 +1,5 @@
 from flask import Flask, send_from_directory
-from flask_restful import Api, Resource
+from flask_restful import Api
 from server.ApiResources.TodoList import TodoList
 from server.ApiResources.Todo import Todo
 
