@@ -4,7 +4,8 @@ from server.ApiResources.TodoList import TodoList
 from server.ApiResources.Todo import Todo
 
 
-class AppStarter(Resource):
+class AppStarter():
+
     def __init__(self):
         self._static_files_root_folder_path = ''  # Default is current folder
         self._app = Flask(__name__)  # , static_folder='client', static_url_path='')
@@ -16,7 +17,6 @@ class AppStarter(Resource):
         self._app.add_url_rule('/', 'index', self._goto_index, methods=['GET'])
 
     def register_routes_to_resources(self, static_files_root_folder_path):
-
         self._register_static_server(static_files_root_folder_path)
         self._api.add_resource(TodoList, '/api/todos')
         self._api.add_resource(Todo, '/api/todos/<todo_id>')
@@ -27,6 +27,8 @@ class AppStarter(Resource):
     def _serve_page(self, file_relative_path_to_root):
         return send_from_directory(self._static_files_root_folder_path, file_relative_path_to_root)
 
-    def run(self, module_name):
-        if module_name == '__main__':
-            self._app.run(debug=True)
+    def run(self):
+        self._app.run()
+
+    def get_flask_runner(self):
+        return self._app
