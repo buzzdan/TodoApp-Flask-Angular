@@ -1,7 +1,7 @@
 import os
 
 
-class EnvironmentSettings():
+class EnvironmentSettingsLoader():
     """Access to environment variables via system os or .env file for development
 
     """

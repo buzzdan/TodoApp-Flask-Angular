@@ -31,11 +31,14 @@ class Todo(Resource):
         abort(404, message="Todo {} doesn't exist".format(todo_id))
 
     def get(self, todo_id):
-        maybe = self._todo_repository.get_by_id(todo_id)
-        if maybe.exists():
-            return TodoDTO(maybe.values()[0]).to_json()
-        else:
-            self.abort_doesnt_exist(todo_id)
+        try:
+            maybe = self._todo_repository.get_by_id(todo_id)
+            if maybe.exists():
+                return TodoDTO(maybe.values()[0]).to_json()
+            else:
+                self.abort_doesnt_exist(todo_id)
+        except Exception as e:
+            abort(500, message="{}".format(e))
 
     def delete(self, todo_id):
         try:
@@ -43,6 +46,8 @@ class Todo(Resource):
             return '', 204
         except KeyError:
             self.abort_doesnt_exist(todo_id)
+        except Exception as e:
+            abort(500, message="{}".format(e))
 
     def put(self, todo_id):
         args = self._parser.parse_args()
@@ -60,5 +65,8 @@ class Todo(Resource):
 
         except ValueError as error:
             return "Input error: {}".format(error), 422  # HTTP error for Unprocessable Entity
+
+        except Exception as e:
+            abort(500, message="{}".format(e))
 
 

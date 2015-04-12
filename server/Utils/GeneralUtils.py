@@ -19,3 +19,10 @@ def must_have(obj, member, of_type, use_method):
                                             member,
                                             of_type.__name__,
                                             use_method)
+
+
+def pre_condition_arg(obj, arg, of_type):
+    if not isinstance(arg, of_type):
+            raise InvalidInstantiationError(obj.__class__.__name__,
+                                            arg,
+                                            of_type.__name__)
