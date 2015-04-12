@@ -21,7 +21,7 @@ class StagingConfig(Config):
 class DevelopmentConfig(Config):
     DEVELOPMENT = True
     DEBUG = True
-    DB_CONNECTION_STRING = 'mongodb://localhost:2187/'
+    DB_CONNECTION_STRING = 'mongodb://localhost/mydb'
 
 
 class TestingConfig(Config):

@@ -2,6 +2,7 @@ from flask import Flask, send_from_directory
 from flask_restful import Api
 from server.ApiResources.TodoList import TodoList
 from server.ApiResources.Todo import Todo
+from server.Repositories.InMemoryTodoRepository import InMemoryTodoRepository
 
 
 class AppStarter():
@@ -18,9 +19,13 @@ class AppStarter():
         self._app.add_url_rule('/', 'index', self._goto_index, methods=['GET'])
 
     def register_routes_to_resources(self, static_files_root_folder_path):
+
         self._register_static_server(static_files_root_folder_path)
+
+        todo = Todo.create(InMemoryTodoRepository())
+        self._api.add_resource(todo, '/api/todos/<todo_id>')
+
         self._api.add_resource(TodoList, '/api/todos')
-        self._api.add_resource(Todo, '/api/todos/<todo_id>')
 
     def _goto_index(self):
         return self._serve_page("index.html")
