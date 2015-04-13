@@ -39,7 +39,7 @@ class TodoList(Resource):
             todos = self._todo_repository.get_all()
             return self.toJson(todos), 201
         except Exception as ex:
-            return "Input error: {}".format(ex), 422  # HTTP error for Unprocessable Entity
+            return "Input error: {}".format(ex), 500  # General Error
 
         except ValueError as e:
             return "Input error: {}".format(e), 422  # HTTP error for Unprocessable Entity
