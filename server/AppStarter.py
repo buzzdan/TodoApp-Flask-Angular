@@ -26,6 +26,8 @@ class AppStarter():
         self._register_static_server(static_files_root_folder_path)
 
         db_url = self._environment_settings_loader['DB_CONNECTION_STRING']
+        print(db_url)
+
         todo_repo = MongoDbTodoRepository(db_url)
         todo = Todo.create(todo_repo)
         todo_list = TodoList.create(todo_repo)
@@ -37,6 +39,7 @@ class AppStarter():
         return self._serve_page("index.html")
 
     def _serve_page(self, file_relative_path_to_root):
+        print("sending '{}\{}'".format(self._static_files_root_folder_path, file_relative_path_to_root))
         return send_from_directory(self._static_files_root_folder_path, file_relative_path_to_root)
 
     def run(self):
