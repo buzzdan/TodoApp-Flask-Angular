@@ -25,7 +25,7 @@ class AppStarter():
     def register_routes_to_resources(self, static_files_root_folder_path):
         self._register_static_server(static_files_root_folder_path)
 
-        db_url = self._environment_settings_loader['DB_CONNECTION_STRING']
+        db_url = self._environment_settings_loader['MONGOLAB_URI']
         print(db_url)
 
         todo_repo = MongoDbTodoRepository(db_url)

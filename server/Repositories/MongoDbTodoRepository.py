@@ -1,5 +1,5 @@
 import datetime
-from urllib.parse import urlsplit
+from urllib.parse import urlsplit, urlparse
 from bson import ObjectId
 from server.Entities.TodoTask import TodoTask
 from server.Repositories.ITodoRepository import ITodoRepository
@@ -13,14 +13,12 @@ from server.Utils.Maybe import Maybe
 class DBConnectionDetails:
     def __init__(self, connection_string):
         self.db_url = connection_string
-        self.parsed_url = urlsplit(connection_string)
-        self.db_name = self.parsed_url.path[1:]
-        self.user = ''
-        self.password = ''
-
-        # Authenticate
-        if '@' in self.db_url:
-            self.user, self.password = self.parsed_url.netloc.split('@')[0].split(':')
+        url = urlparse(connection_string)
+        self.db_name = url.path[1:]
+        self.host = url.hostname
+        self.port = url.port
+        self.user = url.username
+        self.password = url.password
 
 
 class MongoDbTodoRepository(ITodoRepository):
@@ -29,33 +27,15 @@ class MongoDbTodoRepository(ITodoRepository):
 
         pre_condition_arg(self, connection_string, of_type=str)
 
-        self._connection_details = DBConnectionDetails(connection_string)
+        self.connection_details = DBConnectionDetails(connection_string)
         self._db_client = MongoClient(connection_string, _connect=False)
         self._todos_db = None
-
-        # db = self.connect_to_db(connection_string)
-        # self._db_client = MongoClient(connection_string)
-        # self._db = self._db_client.get_default_database()
-        # self._todos_db = db['todos']
 
     def _get_todos_collection(self):
         if not self._todos_db:
             db = self._db_client.get_default_database()
-            self._db_client.au
             self._todos_db = db['todos']
         return self._todos_db
-
-        # db_url = self._db_url
-        # parsed_url = urlsplit(db_url)
-        # db_name = parsed_url.path[1:]
-        # # Get your DB
-        # # Authenticate
-        # if '@' in db_url:
-        #     user, password = parsed_url.netloc.split('@')[0].split(':')
-        #     # db.authenticate(user, password)
-        #
-        # db = Connection(db_url)[db_name]
-        # return db
 
     def get_all(self):
         todo_collection = self._get_todos_collection()
