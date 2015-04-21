@@ -4,18 +4,30 @@ from server.ApiResources.TodoList import TodoList
 from server.ApiResources.Todo import Todo
 from server.Repositories.MongoDbTodoRepository import MongoDbTodoRepository
 from server.Utils.EnvironmentSettingsLoader import EnvironmentSettingsLoader
+from .Authenticator import Authenticator, SecretAuthKeys
 from server.Utils.GeneralUtils import pre_condition_arg
 
 
 class AppStarter():
 
     def __init__(self, environment_settings_loader):
+
         pre_condition_arg(self, environment_settings_loader, EnvironmentSettingsLoader)
         self._environment_settings_loader = environment_settings_loader
+
         self._static_files_root_folder_path = ''  # Default is current folder
+
         self._app = Flask(__name__)  # , static_folder='client', static_url_path='')
         self._api = Api(self._app)
+
+
+
         # self._app.config.from_object(config_name)
+
+    def get_auth_secrets(self):
+        user_auth_token = self._environment_settings_loader['TOKEN_SECRET']
+        facebook_token = self._environment_settings_loader['FACEBOOK_SECRET']
+        return SecretAuthKeys(user_auth_token, facebook_token)
 
     def _register_static_server(self, static_files_root_folder_path):
         self._static_files_root_folder_path = static_files_root_folder_path
@@ -24,6 +36,10 @@ class AppStarter():
 
     def register_routes_to_resources(self, static_files_root_folder_path):
         self._register_static_server(static_files_root_folder_path)
+
+        auth_secrets = self.get_auth_secrets()
+        authenticator = Authenticator(None, self._app, auth_secrets)
+        authenticator.register_routes()
 
         db_url = self._environment_settings_loader['MONGOLAB_URI']
         print(db_url)

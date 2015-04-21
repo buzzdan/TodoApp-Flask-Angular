@@ -22,6 +22,12 @@ def must_have(obj, member, of_type, use_method):
 
 
 def pre_condition_arg(obj, arg, of_type):
+    """Making sure an argument is of a certain type.
+    if not - throws InvalidInstantiationError
+    :param obj: current calling object (it's name will appear in the exception if thrown)
+    :param arg: argument that is passed in (to validate)
+    :param of_type: of which type the argument is supposed to be
+    """
     if not isinstance(arg, of_type):
             raise InvalidInstantiationError(obj.__class__.__name__,
                                             arg,
