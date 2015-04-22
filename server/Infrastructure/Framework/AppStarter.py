@@ -20,7 +20,7 @@ class AppStarter():
 
         self._static_files_root_folder_path = ''  # Default is current folder
 
-        self._app = Flask(__name__)  # , static_folder='client', static_url_path='')
+        self._app = Flask(__name__)  # , static_folder='Client', static_url_path='')
         self._api = Api(self._app)
 
 
