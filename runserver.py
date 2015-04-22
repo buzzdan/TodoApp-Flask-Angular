@@ -1,10 +1,10 @@
 import os
-from server import AppStarter, EnvironmentSettingsLoader
+from Server import AppStarter, EnvironmentSettingsLoader
 
 root_folder_path = os.path.dirname(os.path.abspath(__file__))
 static_folder_root = os.path.join(root_folder_path, "Client")
 
-print('starting server... ToDo is coming right at ya!')
+print('starting Server... ToDo is coming right at ya!')
 # config_name = settings_loader['APP_SETTINGS']
 # print('Setting up: '+config_name)
 

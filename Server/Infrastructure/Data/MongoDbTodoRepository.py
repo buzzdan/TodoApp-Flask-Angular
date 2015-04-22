@@ -4,9 +4,9 @@ from urllib.parse import urlparse
 from bson import ObjectId
 from pymongo import MongoClient
 
-from server.Domain.Entities.TodoTask import TodoTask
-from server.Domain.Interfaces import ITodoRepository
-from server.Domain.Core import pre_condition_arg, Maybe
+from Server.Domain.Entities.TodoTask import TodoTask
+from Server.Domain.Interfaces import ITodoRepository
+from Server.Domain.Core import pre_condition_arg, Maybe
 
 # TODO: finish this class - handle if not found with maybe object...
 

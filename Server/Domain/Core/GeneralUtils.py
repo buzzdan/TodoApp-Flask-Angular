@@ -1,4 +1,4 @@
-from server.Domain.Core.Exceptions import InvalidInstantiationError
+from Server.Domain.Core.Exceptions import InvalidInstantiationError
 
 
 def member_exists(obj, member, of_type):

@@ -1,14 +1,14 @@
 from flask import Flask, send_from_directory
 from flask_restful import Api
 
-from server.Infrastructure.Data import InMemoryTodoRepository
-from server.Infrastructure.Framework.ApiResources import TodoList
-from server.Infrastructure.Framework.ApiResources import Todo
-from server.Infrastructure.Services import EnvironmentSettingsLoader
+from Server.Infrastructure.Data import InMemoryTodoRepository
+from Server.Infrastructure.Framework.ApiResources import TodoList
+from Server.Infrastructure.Framework.ApiResources import Todo
+from Server.Infrastructure.Services import EnvironmentSettingsLoader
 
-# from server.Infrastructure.Framework.Authenticator import SecretAuthKeys
-# from server.Infrastructure.Framework import Authenticator
-from server.Domain.Core.GeneralUtils import pre_condition_arg
+# from Server.Infrastructure.Framework.Authenticator import SecretAuthKeys
+# from Server.Infrastructure.Framework import Authenticator
+from Server.Domain.Core.GeneralUtils import pre_condition_arg
 
 
 class AppStarter():

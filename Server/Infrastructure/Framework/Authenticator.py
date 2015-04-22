@@ -9,10 +9,10 @@ import requests
 from flask import g, request, jsonify, Flask
 from jwt import DecodeError, ExpiredSignatureError
 
-from server.Domain.Entities.User import User
-from server.Domain.Interfaces import IUserRepository
-from server.Domain.Core.Exceptions import InvalidInstantiationError
-from server.Utils.GeneralUtils import pre_condition_arg
+from Server.Domain.Entities.User import User
+from Server.Domain.Interfaces import IUserRepository
+from Server.Domain.Core.Exceptions import InvalidInstantiationError
+from Server.Utils.GeneralUtils import pre_condition_arg
 
 
 
@@ -28,7 +28,7 @@ class SecretAuthKeys:
         self.secret_token = user_token
         self.facebook_secret = facebook_secret
 
-# Idea taken from https://github.com/sahat/satellizer/tree/master/examples/server/python
+# Idea taken from https://github.com/sahat/satellizer/tree/master/examples/Server/python
 # TODO: Implement user_repository (memory/mongoDB) and import angular package satellizer
 
 
