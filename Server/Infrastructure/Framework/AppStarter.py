@@ -1,14 +1,13 @@
 from flask import Flask, send_from_directory
 from flask_restful import Api
-
 from Server.Infrastructure.Data import InMemoryTodoRepository
+from Server.Infrastructure.Data.InMemoryUserRepository import InMemoryUserRepository
 from Server.Infrastructure.Framework.ApiResources import TodoList
 from Server.Infrastructure.Framework.ApiResources import Todo
 from Server.Infrastructure.Services import EnvironmentSettingsLoader
-
-# from Server.Infrastructure.Framework.Authenticator import SecretAuthKeys
-# from Server.Infrastructure.Framework import Authenticator
-from Server.Domain.Core.GeneralUtils import pre_condition_arg
+from Server.Infrastructure.Framework.Authenticator import SecretAuthKeys
+from .FlaskAuthenticationRouter import FlaskAuthenticationRouter
+from Server.Domain.Core import pre_condition_arg
 
 
 class AppStarter():
@@ -23,15 +22,6 @@ class AppStarter():
         self._app = Flask(__name__)  # , static_folder='Client', static_url_path='')
         self._api = Api(self._app)
 
-
-
-        # self._app.config.from_object(config_name)
-
-    # def get_auth_secrets(self):
-    #     user_auth_token = self._environment_settings_loader['TOKEN_SECRET']
-    #     facebook_token = self._environment_settings_loader['FACEBOOK_SECRET']
-    #     return SecretAuthKeys(user_auth_token, facebook_token)
-
     def _register_static_server(self, static_files_root_folder_path):
         self._static_files_root_folder_path = static_files_root_folder_path
         self._app.add_url_rule('/<path:file_relative_path_to_root>', 'serve_page', self._serve_page, methods=['GET'])
@@ -40,9 +30,9 @@ class AppStarter():
     def register_routes_to_resources(self, static_files_root_folder_path):
         self._register_static_server(static_files_root_folder_path)
 
-        # auth_secrets = self.get_auth_secrets()
-        # authenticator = Authenticator(None, self._app, auth_secrets)
-        # authenticator.register_routes()
+        userRepo = InMemoryUserRepository()
+        self.authenticator = FlaskAuthenticationRouter(userRepo, self._app)
+        self.authenticator.register_routes()
 
         db_url = self._environment_settings_loader['MONGOLAB_URI']
         print(db_url)
