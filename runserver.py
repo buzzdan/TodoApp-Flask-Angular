@@ -1,7 +1,5 @@
 import os
-
-from server.AppStarter import AppStarter
-from server.Utils.EnvironmentSettingsLoader import EnvironmentSettingsLoader
+from server import AppStarter, EnvironmentSettingsLoader
 
 root_folder_path = os.path.dirname(os.path.abspath(__file__))
 static_folder_root = os.path.join(root_folder_path, "client")

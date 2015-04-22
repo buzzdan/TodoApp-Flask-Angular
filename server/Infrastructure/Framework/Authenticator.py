@@ -1,16 +1,21 @@
 # from requests.packages.urllib3.exceptions import DecodeError
 from urllib.parse import parse_qsl
-from server.Entities.User import User
-from server.Repositories.IUserRepository import IUserRepository
-from server.Utils.Exceptions import InvalidInstantiationError
-from server.Utils.GeneralUtils import pre_condition_arg
 from datetime import datetime, timedelta
-import jwt
 import json
-import requests
 from functools import wraps
-from flask import g, request, jsonify
+
+import jwt
+import requests
+from flask import g, request, jsonify, Flask
 from jwt import DecodeError, ExpiredSignatureError
+
+from server.Domain.Entities.User import User
+from server.Domain.Interfaces import IUserRepository
+from server.Domain.Core.Exceptions import InvalidInstantiationError
+from server.Utils.GeneralUtils import pre_condition_arg
+
+
+
 
 # from urlparse import parse_qs, parse_qsl
 # from urllib import urlencode
@@ -33,8 +38,7 @@ class Authenticator:
         pre_condition_arg(self, user_repository, of_type=IUserRepository)
         self._user_repository = user_repository
 
-        if flask_app is None:
-            raise InvalidInstantiationError(type(self).__class__.__name__, "flask_app")
+        pre_condition_arg(self, flask_app, of_type=Flask)
         self._flask_app = flask_app
 
         pre_condition_arg(self, secrets, of_type=SecretAuthKeys)

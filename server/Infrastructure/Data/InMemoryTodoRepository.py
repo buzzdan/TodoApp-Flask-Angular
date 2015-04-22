@@ -1,6 +1,6 @@
-from server.Entities.TodoTask import TodoTask
-from server.Repositories.ITodoRepository import ITodoRepository
-from server.Utils.Maybe import Maybe
+from server.Domain.Entities import *
+from server.Domain.Interfaces.ITodoRepository import ITodoRepository
+from server.Domain.Core import Maybe
 
 
 class InMemoryTodoRepository(ITodoRepository):

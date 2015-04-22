@@ -1,11 +1,12 @@
 import datetime
-from urllib.parse import urlsplit, urlparse
+from urllib.parse import urlparse
+
 from bson import ObjectId
-from server.Entities.TodoTask import TodoTask
-from server.Repositories.ITodoRepository import ITodoRepository
-from pymongo import MongoClient, Connection
-from server.Utils.GeneralUtils import pre_condition_arg
-from server.Utils.Maybe import Maybe
+from pymongo import MongoClient
+
+from server.Domain.Entities.TodoTask import TodoTask
+from server.Domain.Interfaces import ITodoRepository
+from server.Domain.Core import pre_condition_arg, Maybe
 
 # TODO: finish this class - handle if not found with maybe object...
 
