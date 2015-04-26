@@ -27,8 +27,30 @@ class InMemoryUserRepository(IUserRepository):
         else:
             return Maybe(value=user)
 
-    def update(self, _id, user):
-        pass
+    def update(self, user_id, user):
+        maybe_db_user = self.get_by_id(user_id)
+        if maybe_db_user.exists():
+            db_user = maybe_db_user.values()[0]
+        else:
+            raise UserDoesntExistsError("invalid user_id")
+
+        if db_user.facebook != user.facebook:
+            db_user.facebook = user.facebook
+
+        if db_user.email != user.email:
+            db_user.email = user.email
+
+        if db_user.twitter != user.twitter:
+            db_user.twitter = user.twitter
+
+        if db_user.google != user.google:
+            db_user.google = user.google
+
+        if db_user.github != user.github:
+            db_user.github = user.github
+
+        if db_user.display_name != user.display_name:
+            db_user.display_name = user.display_name
 
     def get_by_email(self, email):
         user = next((u for u in self._users_db if u.email == email), None)
@@ -42,7 +64,11 @@ class InMemoryUserRepository(IUserRepository):
         pass
 
     def get_all(self):
-        return self._users_db
+        return (user.copy_user() for user in self._users_db)  # so we wont return the DB reference
 
     def add(self, user):
         self._users_db.append(user)
+
+
+class UserDoesntExistsError(Exception):
+    pass

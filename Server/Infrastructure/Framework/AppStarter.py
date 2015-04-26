@@ -4,6 +4,7 @@ from Server.Infrastructure.Data import InMemoryTodoRepository
 from Server.Infrastructure.Data.InMemoryUserRepository import InMemoryUserRepository
 from Server.Infrastructure.Framework.ApiResources import TodoList
 from Server.Infrastructure.Framework.ApiResources import Todo
+from Server.Infrastructure.Framework.ApiResources.Auth import Profile
 from Server.Infrastructure.Services import EnvironmentSettingsLoader
 from Server.Infrastructure.Framework.Authenticator import SecretAuthKeys
 from .FlaskAuthenticationRouter import FlaskAuthenticationRouter
@@ -23,7 +24,7 @@ class AppStarter():
         self._api = Api(self._app)
 
     def _register_static_server(self, static_files_root_folder_path):
-        self._static_files_root_folder_path = static_files_root_folder_path
+        self._static_files_root_folder_path = static_files_root_folder_path + '/js/satellizer'
         self._app.add_url_rule('/<path:file_relative_path_to_root>', 'serve_page', self._serve_page, methods=['GET'])
         self._app.add_url_rule('/', 'index', self._goto_index, methods=['GET'])
 
@@ -41,7 +42,9 @@ class AppStarter():
         todo_repo = InMemoryTodoRepository()
         todo = Todo.create(todo_repo)
         todo_list = TodoList.create(todo_repo)
+        profile = Profile.create(userRepo)
 
+        self._api.add_resource(profile, '/api/me')
         self._api.add_resource(todo, '/api/todos/<todo_id>')
         self._api.add_resource(todo_list, '/api/todos')
 
@@ -49,11 +52,15 @@ class AppStarter():
         return self._serve_page("index.html")
 
     def _serve_page(self, file_relative_path_to_root):
-        print("sending '{}\{}'".format(self._static_files_root_folder_path, file_relative_path_to_root))
+        print("sending '{}/{}'".format(self._static_files_root_folder_path, file_relative_path_to_root))
         return send_from_directory(self._static_files_root_folder_path, file_relative_path_to_root)
 
     def run(self):
-        self._app.run()
+        debug = bool(self._environment_settings_loader['DEBUG'])
+        if debug:
+            self._app.run(debug=debug, host='fuf.me', port=5000)
+        else:
+            self._app.run()
 
     def get_flask_runner(self):
         return self._app

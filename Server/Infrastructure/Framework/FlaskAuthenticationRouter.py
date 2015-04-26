@@ -1,23 +1,14 @@
 from urllib.parse import parse_qsl
-# from flask import Flask, request, jsonify
-# from flask_restful.representations import json
-# import requests
-from flask_restful import reqparse
 from Server.Domain.Core import pre_condition_arg
 from Server.Domain.Entities.User import User
 from Server.Domain.Interfaces import IUserRepository
-from Server.Domain.Core.Exceptions import InvalidInstantiationError
-from Server.Infrastructure.Framework.Authenticator import SecretAuthKeys, login_required, parse_token, create_token
-
-from datetime import datetime, timedelta
-import os
-import jwt
+from Server.Infrastructure.Framework.Authenticator import SecretAuthKeys, parse_token, create_token
 import json
 import requests
-from functools import wraps
+from flask import Flask, request, jsonify
+
 # from urlparse import parse_qs, parse_qsl
 # from urllib import urlencode
-from flask import Flask, g, send_file, request, redirect, url_for, jsonify
 # from flask.ext.sqlalchemy import SQLAlchemy
 # from werkzeug.security import generate_password_hash, check_password_hash
 # from requests_oauthlib import OAuth1
@@ -90,11 +81,12 @@ class FlaskAuthenticationRouter:
 
         # Step 1. Exchange authorization code for access token.
         r = requests.get(access_token_url, params=params)
-        access_token = dict(parse_qsl(r.text))
+        access_token = json.loads(r.text)
 
         # Step 2. Retrieve information about the current user.
         r = requests.get(graph_api_url, params=access_token)
         profile = json.loads(r.text)
+        user_email_from_facebook = profile['email']
 
         # Step 3. (optional) Link accounts.
         if request.headers.get('Authorization'):
@@ -112,18 +104,37 @@ class FlaskAuthenticationRouter:
                 response.status_code = 400
                 return response
 
-            u = User(facebook=profile['id'], display_name=profile['name'])
-            self._user_repository.add(u)
-            token = create_token(u)
-            return jsonify(token=token)
-
-        # Step 4. Create a new account or return an existing one.
-        user = self._user_repository.get_by_facebook_id(facebook=profile['id'])
-        if user:
+            # u = User(facebook=profile['id'], display_name=profile['name'])
+            # self._user_repository.add(u)
+            # token = create_token(u)
+            # return jsonify(token=token)
+            user = user.copy_user()
+            user.facebook = profile['id']
+            user.display_name = profile['name']
+            if user.email is None:
+                user.email = profile['email']
+            self._user_repository.update(user.id, user)
             token = create_token(user)
             return jsonify(token=token)
 
-        u = User(facebook=profile['id'], display_name=profile['name'])
+        # Step 4. Create a new account or return an existing one.
+        maybe_user = self._user_repository.get_by_facebook_id(facebook_id=profile['id'])
+        if maybe_user.exists():
+            user = maybe_user.values()[0]
+            token = create_token(user)
+            return jsonify(token=token)
+
+        maybe_user_with_same_email = self._user_repository.get_by_email(email=profile['email'])  # Link accounts
+        if maybe_user_with_same_email.exists():
+            user = maybe_user_with_same_email.values()[0].copy_user()
+            user.facebook = profile['id']
+            if user.display_name is None:
+                user.display_name = profile['name']
+            self._user_repository.update(user.id, user)
+            token = create_token(user)
+            return jsonify(token=token)
+
+        u = User(facebook=profile['id'], display_name=profile['name'], email=profile['email'])
         self._user_repository.add(u)
         token = create_token(u)
         return jsonify(token=token)
