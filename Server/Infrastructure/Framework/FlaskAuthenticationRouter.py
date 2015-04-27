@@ -128,6 +128,7 @@ class FlaskAuthenticationRouter:
         pic_link = self._create_facebook_pic_link(profile['id'])
         u = User(facebook=profile['id'], display_name=profile['name'], email=profile['email'], pic_link=pic_link)
         self._user_repository.add(u)
+
         token = create_token(u)
         return jsonify(token=token)
 

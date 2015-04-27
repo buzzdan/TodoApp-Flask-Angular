@@ -2,6 +2,7 @@ from flask import Flask, send_from_directory
 from flask_restful import Api
 from Server.Infrastructure.Data import InMemoryTodoRepository, MongoDbTodoRepository
 from Server.Infrastructure.Data.InMemoryUserRepository import InMemoryUserRepository
+from Server.Infrastructure.Data.MongoDbUserRepository import MongoDbUserRepository
 from Server.Infrastructure.Framework.ApiResources import TodoList
 from Server.Infrastructure.Framework.ApiResources import Todo
 from Server.Infrastructure.Framework.ApiResources import Profile
@@ -36,13 +37,13 @@ class AppStarter():
     def register_routes_to_resources(self, static_files_root_folder_path):
         self._register_static_server(static_files_root_folder_path)
 
-        userRepo = InMemoryUserRepository()
+        db_url = self._environment_settings_loader['MONGOLAB_URI']
+        print(db_url)
+
+        userRepo = MongoDbUserRepository(db_url)
         hasher = WerkzeugPasswordHasher()
         self.authenticator = FlaskAuthenticationRouter(userRepo, hasher, self._app)
         self.authenticator.register_routes()
-
-        db_url = self._environment_settings_loader['MONGOLAB_URI']
-        print(db_url)
 
         todo_repo = MongoDbTodoRepository(db_url)
         # todo_repo = InMemoryTodoRepository()
