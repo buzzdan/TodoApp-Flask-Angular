@@ -45,8 +45,8 @@ class MongoDbTodoRepository(ITodoRepository):
         self._db_client.close()
         return todo_tasks
 
-    def add(self, task_name):
-        todo = {"task_name": task_name, "date": datetime.datetime.utcnow()}
+    def add(self, task):
+        todo = {"task_name": task.get_task_name(), "date": datetime.datetime.utcnow()}
         todo_collection = self._get_todos_collection()
         todo_collection.insert(todo)
         self._db_client.close()
@@ -58,9 +58,9 @@ class MongoDbTodoRepository(ITodoRepository):
         self._db_client.close()
         return Maybe(value=todo)
 
-    def update(self, todo_id, task_name):
+    def update(self, todo_id, task):
         todo_collection = self._get_todos_collection()
-        todo_collection.update({"_id": ObjectId(todo_id)}, {"task_name": task_name})
+        todo_collection.update({"_id": ObjectId(todo_id)}, {"task_name": task.get_task_name()})
         self._db_client.close()
 
     def delete(self, todo_id):

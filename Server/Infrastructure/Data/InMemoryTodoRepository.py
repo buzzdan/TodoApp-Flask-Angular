@@ -29,16 +29,16 @@ class InMemoryTodoRepository(ITodoRepository):
         else:
             self.raise_key_error(todo_id)
 
-    def update(self, todo_id, task_name):
+    def update(self, todo_id, task):
         maybe = self.get_by_id(todo_id)
         if maybe.exists():
             todo = maybe.values()[0]
-            todo.update_task(task_name)
+            todo.update_task(task.get_task_name())
         else:
             self.raise_key_error(todo_id)
 
-    def add(self, task_name):
-        t = TodoTask(task_name)
+    def add(self, task):
+        t = TodoTask(task.get_task_name())
         self._todo_db.append(t)
 
     def raise_key_error(self, todo_id):

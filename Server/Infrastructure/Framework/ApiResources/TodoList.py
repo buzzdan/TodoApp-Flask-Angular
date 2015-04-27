@@ -1,4 +1,5 @@
 from flask_restful import reqparse, Resource
+from Server.Domain.Entities import TodoTask
 from Server.Infrastructure.Framework.DTOs import TodoDTO
 from Server.Domain.Interfaces import ITodoRepository
 from Server.Domain.Core import must_have
@@ -35,7 +36,8 @@ class TodoList(Resource):
         task_name = args['task']
 
         try:
-            self._todo_repository.add(task_name)
+            task = TodoTask(task_name)
+            self._todo_repository.add(task)
             todos = self._todo_repository.get_all()
             return self.toJson(todos), 201
         except Exception as ex:

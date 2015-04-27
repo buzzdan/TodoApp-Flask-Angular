@@ -17,9 +17,9 @@ class ITodoRepository(object):
         pass
 
     @abstractmethod
-    def update(self, todo_id, task_name):
+    def update(self, todo_id, task):
         pass
 
     @abstractmethod
-    def add(self, task_name):
+    def add(self, task):
         pass
