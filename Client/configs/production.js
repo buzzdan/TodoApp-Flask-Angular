@@ -1,4 +1,4 @@
 appConfigs = {
     env: 'production',
-    facebookClientId: '1581854422086007'
+    facebookClientId: '1579933858944730'
 }
