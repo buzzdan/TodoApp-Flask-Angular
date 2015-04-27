@@ -1,7 +1,6 @@
-from urllib.parse import parse_qsl
 from Server.Domain.Core import pre_condition_arg
-from Server.Domain.Entities.User import User
-from Server.Domain.Interfaces import IUserRepository
+from Server.Domain.Entities import User
+from Server.Domain.Interfaces import IUserRepository, IPasswordHasher
 from Server.Infrastructure.Framework.Authenticator import SecretAuthKeys, parse_token, create_token
 import json
 import requests
@@ -16,10 +15,13 @@ from flask import Flask, request, jsonify
 
 
 class FlaskAuthenticationRouter:
-    def __init__(self, user_repository, flask_app):
+    def __init__(self, user_repository, password_hasher, flask_app):
 
         pre_condition_arg(self, user_repository, of_type=IUserRepository)
         self._user_repository = user_repository
+
+        pre_condition_arg(self, password_hasher, of_type=IPasswordHasher)
+        self._password_hasher = password_hasher
 
         pre_condition_arg(self, flask_app, of_type=Flask)
         self._flask_app = flask_app
@@ -35,8 +37,10 @@ class FlaskAuthenticationRouter:
 
     # @app.route('/auth/login', methods=['POST'])
     def login(self):
-        user = self._user_repository.get_by_email(email=request.json['email'])
-        if not user or not user.check_password(request.json['password']):
+        maybe_user = self._user_repository.get_by_email(email=request.json['email'])
+        if maybe_user.exists():
+            user = maybe_user.values()[0]
+        if not maybe_user.exists() or not self._password_hasher.verify(request.json['password'], user.hashed_password):
             response = jsonify(message='Wrong Email or Password')
             response.status_code = 401
             return response
@@ -45,7 +49,8 @@ class FlaskAuthenticationRouter:
 
     # @app.route('/auth/signup', methods=['POST'])
     def signup(self):
-        user = User(email=request.json['email'], password=request.json['password'])
+        hashed_password = self._password_hasher.encode(request.json['password'])
+        user = User(email=request.json['email'], hashed_password=hashed_password)
         self._user_repository.add(user)
         token = create_token(user)
         return jsonify(token=token)
@@ -78,16 +83,16 @@ class FlaskAuthenticationRouter:
 
         # Step 3. (optional) Link accounts.
         if request.headers.get('Authorization'):
-            user = self._user_repository.get_by_facebook_id(facebook=profile['id'])
-            if user:
+            maybe_user = self._user_repository.get_by_facebook_id(facebook_id=profile['id'])
+            if maybe_user.exists():
                 response = jsonify(message='There is already a Facebook account that belongs to you')
                 response.status_code = 409
                 return response
 
             payload = parse_token(request)
 
-            user = self._user_repository.get_by_id(id=payload['sub'])
-            if not user:
+            maybe_user = self._user_repository.get_by_id(user_id=payload['sub'])
+            if not maybe_user.exists():
                 response = jsonify(message='User not found')
                 response.status_code = 400
                 return response
@@ -96,7 +101,7 @@ class FlaskAuthenticationRouter:
             # self._user_repository.add(u)
             # token = create_token(u)
             # return jsonify(token=token)
-            user = user.copy_user()
+            user = maybe_user.values()[0]
             user.facebook = profile['id']
             user.display_name = profile['name']
             if user.email is None:

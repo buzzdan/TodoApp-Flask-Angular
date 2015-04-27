@@ -1,18 +1,20 @@
 from Server.Domain.Core import Maybe
 from Server.Domain.Entities import User
 from Server.Domain.Interfaces import IUserRepository
+from Server.Infrastructure.Services import WerkzeugPasswordHasher
 
 
 class InMemoryUserRepository(IUserRepository):
-    _users = [User(email='danfromisrael@gmail.com', password='pass', display_name='dandan'),
-              User(email='maymay@gmail.com', password='pass', display_name='may'),
-              User(email='zuzu@gmail.com', password='pass', display_name='zuzu')]
+    _hasher = WerkzeugPasswordHasher()
+    _users = [User(email='danfromisrael@gmail.com', hashed_password=_hasher.encode('pass'), display_name='dandan'),
+              User(email='maymay@gmail.com', hashed_password=_hasher.encode('pass'), display_name='may'),
+              User(email='zuzu@gmail.com', hashed_password=_hasher.encode('pass'), display_name='zuzu')]
 
     def __init__(self):
         self._users_db = InMemoryUserRepository._users
 
-    def get_by_id(self, _id):
-        user = next((u for u in self._users_db if u.id == _id), None)
+    def get_by_id(self, user_id):
+        user = next((u for u in self._users_db if u.id == user_id), None)
         user_doesnt_exist = user is None
         if user_doesnt_exist:
             return Maybe(None)

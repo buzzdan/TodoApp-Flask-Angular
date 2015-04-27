@@ -5,7 +5,7 @@ from Server.Infrastructure.Data.InMemoryUserRepository import InMemoryUserReposi
 from Server.Infrastructure.Framework.ApiResources import TodoList
 from Server.Infrastructure.Framework.ApiResources import Todo
 from Server.Infrastructure.Framework.ApiResources import Profile
-from Server.Infrastructure.Services import EnvironmentSettingsLoader
+from Server.Infrastructure.Services import EnvironmentSettingsLoader, WerkzeugPasswordHasher
 from .FlaskAuthenticationRouter import FlaskAuthenticationRouter
 from Server.Domain.Core import pre_condition_arg
 
@@ -31,7 +31,8 @@ class AppStarter():
         self._register_static_server(static_files_root_folder_path)
 
         userRepo = InMemoryUserRepository()
-        self.authenticator = FlaskAuthenticationRouter(userRepo, self._app)
+        hasher = WerkzeugPasswordHasher()
+        self.authenticator = FlaskAuthenticationRouter(userRepo, hasher, self._app)
         self.authenticator.register_routes()
 
         db_url = self._environment_settings_loader['MONGOLAB_URI']
