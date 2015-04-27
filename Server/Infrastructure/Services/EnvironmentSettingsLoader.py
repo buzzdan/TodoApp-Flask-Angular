@@ -23,7 +23,8 @@ class EnvironmentSettingsLoader():
         :param var_name: Environment Variable to lookup
         """
         try:
-            return os.environ[var_name]
+            val = os.environ[var_name]
+            return val
         except KeyError:
             from io import StringIO
             from configparser import ConfigParser

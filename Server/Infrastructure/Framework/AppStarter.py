@@ -5,7 +5,7 @@ from Server.Infrastructure.Data.InMemoryUserRepository import InMemoryUserReposi
 from Server.Infrastructure.Framework.ApiResources import TodoList
 from Server.Infrastructure.Framework.ApiResources import Todo
 from Server.Infrastructure.Framework.ApiResources import Profile
-from Server.Infrastructure.Services import EnvironmentSettingsLoader, WerkzeugPasswordHasher
+from Server.Infrastructure.Services import EnvironmentSettingsLoader, WerkzeugPasswordHasher, ConfigurationError
 from .FlaskAuthenticationRouter import FlaskAuthenticationRouter
 from Server.Domain.Core import pre_condition_arg
 
@@ -26,6 +26,12 @@ class AppStarter():
         self._static_files_root_folder_path = static_files_root_folder_path  # + '/js/satellizer'  # <-- Use this to run sattilizer
         self._app.add_url_rule('/<path:file_relative_path_to_root>', 'serve_page', self._serve_page, methods=['GET'])
         self._app.add_url_rule('/', 'index', self._goto_index, methods=['GET'])
+
+
+
+
+
+
 
     def register_routes_to_resources(self, static_files_root_folder_path):
         self._register_static_server(static_files_root_folder_path)
@@ -52,8 +58,21 @@ class AppStarter():
         return self._serve_page("index.html")
 
     def _serve_page(self, file_relative_path_to_root):
+
+        if file_relative_path_to_root == 'appConfigs.js':
+            return self._server_configs()
+
         print("sending '{}/{}'".format(self._static_files_root_folder_path, file_relative_path_to_root))
         return send_from_directory(self._static_files_root_folder_path, file_relative_path_to_root)
+
+    def _server_configs(self):
+        env = EnvironmentChecker(self._environment_settings_loader['APP_SETTINGS'])
+        if env.is_production():
+            return send_from_directory(self._static_files_root_folder_path, 'configs/production.js')
+        elif env.is_development():
+            return send_from_directory(self._static_files_root_folder_path, 'configs/development.js')
+        else:
+            raise ConfigurationError("cannot retrieve app configs. make sure environment is configured")
 
     def run(self):
         debug = bool(self._environment_settings_loader['DEBUG'])
@@ -64,3 +83,14 @@ class AppStarter():
 
     def get_flask_runner(self):
         return self._app
+
+
+class EnvironmentChecker:
+    def __init__(self, config_name):
+        self.config_name = config_name
+
+    def is_production(self):
+        return self.config_name == 'ProductionConfig'
+
+    def is_development(self):
+        return self.config_name == 'DevelopmentConfig'

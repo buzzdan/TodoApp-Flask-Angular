@@ -1,3 +1,4 @@
+alert('hi' + appConfigs.env)
 angular.module('MyApp', ['ngResource', 'ngMessages', 'ui.router', 'mgcrea.ngStrap', 'satellizer'])
   .config(function($stateProvider, $urlRouterProvider, $authProvider) {
     $stateProvider
@@ -43,7 +44,9 @@ angular.module('MyApp', ['ngResource', 'ngMessages', 'ui.router', 'mgcrea.ngStra
     $urlRouterProvider.otherwise('/');
 
     $authProvider.facebook({
-      clientId: '1579943425610440'
+        clientId: appConfigs.facebookClientId
+//      clientId: '1581854422086007' //heroku
+//      clientId: '1579943425610440' //debug
     });
 
     $authProvider.google({
