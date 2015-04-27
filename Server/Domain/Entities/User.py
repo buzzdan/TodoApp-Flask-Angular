@@ -5,7 +5,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 class User():
     def __init__(self, email=None, password=None, display_name=None,
                  facebook=None, github=None, google=None, linkedin=None,
-                 twitter=None):
+                 twitter=None, pic_link=None):
         self.id = str(uuid1())
         if email:
             self.email = email.lower()
@@ -18,17 +18,19 @@ class User():
         self.google = google
         self.linkedin = linkedin
         self.twitter = twitter
+        self.pic_link = pic_link
 
+    # TODO: move this logic somewhere else. Domain entity is not supposed to use infrastructure utility
     def set_password(self, password):
         self.password = generate_password_hash(password)
 
     def check_password(self, password):
         return check_password_hash(self.password, password)
 
-    def to_json(self):
-        return dict(id=self.id, email=self.email, displayName=self.display_name,
-                    facebook=self.facebook, google=self.google,
-                    linkedin=self.linkedin, twitter=self.twitter)
+    # def to_json(self):
+    #     return dict(id=self.id, email=self.email, displayName=self.display_name,
+    #                 facebook=self.facebook, google=self.google,
+    #                 linkedin=self.linkedin, twitter=self.twitter)
 
     def copy_user(self):
         u = User(email=self.email,
@@ -38,6 +40,7 @@ class User():
                     github=self.github,
                     google=self.google,
                     linkedin=self.linkedin,
-                    twitter=self.twitter)
+                    twitter=self.twitter,
+                    pic_link=self.pic_link)
         u.id = self.id
         return u

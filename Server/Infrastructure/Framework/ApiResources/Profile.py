@@ -4,6 +4,7 @@ from Server.Domain.Interfaces import IUserRepository
 from flask_restful import reqparse, abort, Resource
 from flask import Flask, request, jsonify, g
 from Server.Infrastructure.Framework.Authenticator import login_required
+from Server.Infrastructure.Framework.DTOs import UserDTO
 
 
 class Profile(Resource):
@@ -28,8 +29,26 @@ class Profile(Resource):
         cls._user_repository = user_repository
         return cls
 
+    def abort_doesnt_exist(self, user_id):
+        abort(404, message="user {} doesn't exist".format(user_id))
+
     # @app.route('/api/me')
     @login_required
     def get(self):
-        user = self._user_repository.get_by_id(g.user_id)
-        return jsonify(user.to_json())
+        maybe_user = self._user_repository.get_by_id(g.user_id)
+        if maybe_user.exists():
+            user = maybe_user.values()[0]
+            return UserDTO(user).to_json()
+        else:
+            self.abort_doesnt_exist(g.user_id)
+
+    @login_required
+    def put(self):
+        maybe_user = self._user_repository.get_by_id(g.user_id)
+        if maybe_user.exists():
+            user = maybe_user.values()[0]
+            user.display_name = request.json['displayName']
+            user.email = request.json['email']
+            self._user_repository.update(g.user_id, user)
+        else:
+            self.abort_doesnt_exist(g.user_id)

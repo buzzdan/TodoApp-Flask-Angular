@@ -17,7 +17,7 @@ class InMemoryUserRepository(IUserRepository):
         if user_doesnt_exist:
             return Maybe(None)
         else:
-            return Maybe(value=user)
+            return Maybe(value=user.copy_user())
 
     def get_by_facebook_id(self, facebook_id):
         user = next((u for u in self._users_db if u.facebook == facebook_id), None)
@@ -25,12 +25,12 @@ class InMemoryUserRepository(IUserRepository):
         if user_doesnt_exist:
             return Maybe(None)
         else:
-            return Maybe(value=user)
+            return Maybe(value=user.copy_user())
 
     def update(self, user_id, user):
-        maybe_db_user = self.get_by_id(user_id)
-        if maybe_db_user.exists():
-            db_user = maybe_db_user.values()[0]
+        maybe_db_user = next((u for u in self._users_db if u.id == user_id), None)
+        if maybe_db_user is not None:
+            db_user = maybe_db_user
         else:
             raise UserDoesntExistsError("invalid user_id")
 
@@ -52,13 +52,16 @@ class InMemoryUserRepository(IUserRepository):
         if db_user.display_name != user.display_name:
             db_user.display_name = user.display_name
 
+        if db_user.pic_link != user.pic_link:
+            db_user.pic_link = user.pic_link
+
     def get_by_email(self, email):
         user = next((u for u in self._users_db if u.email == email), None)
         user_doesnt_exist = user is None
         if user_doesnt_exist:
             return Maybe(None)
         else:
-            return Maybe(value=user)
+            return Maybe(value=user.copy_user())
 
     def delete(self, _id):
         pass

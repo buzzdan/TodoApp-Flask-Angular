@@ -34,15 +34,15 @@ class SecretAuthKeys:
 _secrets = SecretAuthKeys()
 
 # Idea taken from https://github.com/sahat/satellizer/tree/master/examples/Server/python
-# TODO: Implement user_repository (memory/mongoDB) and import angular package satellizer
 
 
 def create_token(user):
     payload = {
         'sub': user.id,
-        'iat': datetime.now(),
-        'exp': datetime.now() + timedelta(days=14)
+        'iat': datetime.utcnow(),
+        'exp': datetime.utcnow() + timedelta(days=14)
     }
+    # now = timegm(datetime.utcnow().utctimetuple())
     token = jwt.encode(payload, _secrets.secret_token)
     return token.decode('unicode_escape')
 

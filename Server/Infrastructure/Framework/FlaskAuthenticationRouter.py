@@ -27,18 +27,11 @@ class FlaskAuthenticationRouter:
         self._secrets = SecretAuthKeys()
 
     # Routes
-    # TODO: register api routes
     def register_routes(self):
         # self._flask_app.add_url_rule('/api/me', 'me', self.me, methods=['GET'])
         self._flask_app.add_url_rule('/auth/login', 'login', self.login, methods=['POST'])
         self._flask_app.add_url_rule('/auth/signup', 'signup', self.signup, methods=['POST'])
         self._flask_app.add_url_rule('/auth/facebook', 'facebook', self.facebook, methods=['POST'])
-
-    # @app.route('/api/me')
-    # @login_required
-    # def me(self):
-    #     user = self._user_repository.get_by_id(g.user_id)
-    #     return jsonify(user.to_json())
 
     # @app.route('/auth/login', methods=['POST'])
     def login(self):
@@ -57,6 +50,9 @@ class FlaskAuthenticationRouter:
         token = create_token(user)
         return jsonify(token=token)
 
+    def _create_facebook_pic_link(self, facebook_id):
+        return 'http://graph.facebook.com/{facebook_id}/picture?type=large'.format(facebook_id=facebook_id)
+
     # @app.route('/auth/facebook', methods=['POST'])
     def facebook(self):
         if self._secrets.facebook_secret is None or str(self._secrets.facebook_secret).strip() == '':
@@ -64,13 +60,6 @@ class FlaskAuthenticationRouter:
 
         access_token_url = 'https://graph.facebook.com/v2.3/oauth/access_token'
         graph_api_url = 'https://graph.facebook.com/v2.3/me'
-
-        # self._parser = reqparse.RequestParser()
-        # self._parser.add_argument('clientId', type=str)
-        # self._parser.add_argument('redirectUri', type=str)
-        # self._parser.add_argument('code', type=str)
-        # args = self._parser.parse_args()
-        # print(args['clientId'])
 
         params = {
             'client_id': request.json['clientId'],
@@ -86,7 +75,6 @@ class FlaskAuthenticationRouter:
         # Step 2. Retrieve information about the current user.
         r = requests.get(graph_api_url, params=access_token)
         profile = json.loads(r.text)
-        user_email_from_facebook = profile['email']
 
         # Step 3. (optional) Link accounts.
         if request.headers.get('Authorization'):
@@ -113,6 +101,9 @@ class FlaskAuthenticationRouter:
             user.display_name = profile['name']
             if user.email is None:
                 user.email = profile['email']
+            if user.pic_link is None:
+                user.pic_link = self._create_facebook_pic_link(user.facebook)
+
             self._user_repository.update(user.id, user)
             token = create_token(user)
             return jsonify(token=token)
@@ -130,11 +121,14 @@ class FlaskAuthenticationRouter:
             user.facebook = profile['id']
             if user.display_name is None:
                 user.display_name = profile['name']
+            if user.pic_link is None:
+                user.pic_link = self._create_facebook_pic_link(user.facebook)
             self._user_repository.update(user.id, user)
             token = create_token(user)
             return jsonify(token=token)
 
-        u = User(facebook=profile['id'], display_name=profile['name'], email=profile['email'])
+        pic_link = self._create_facebook_pic_link(profile['id'])
+        u = User(facebook=profile['id'], display_name=profile['name'], email=profile['email'], pic_link=pic_link)
         self._user_repository.add(u)
         token = create_token(u)
         return jsonify(token=token)

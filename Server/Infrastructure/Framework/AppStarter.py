@@ -4,9 +4,8 @@ from Server.Infrastructure.Data import InMemoryTodoRepository
 from Server.Infrastructure.Data.InMemoryUserRepository import InMemoryUserRepository
 from Server.Infrastructure.Framework.ApiResources import TodoList
 from Server.Infrastructure.Framework.ApiResources import Todo
-from Server.Infrastructure.Framework.ApiResources.Auth import Profile
+from Server.Infrastructure.Framework.ApiResources import Profile
 from Server.Infrastructure.Services import EnvironmentSettingsLoader
-from Server.Infrastructure.Framework.Authenticator import SecretAuthKeys
 from .FlaskAuthenticationRouter import FlaskAuthenticationRouter
 from Server.Domain.Core import pre_condition_arg
 
