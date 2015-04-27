@@ -6,13 +6,6 @@ import json
 import requests
 from flask import Flask, request, jsonify
 
-# from urlparse import parse_qs, parse_qsl
-# from urllib import urlencode
-# from flask.ext.sqlalchemy import SQLAlchemy
-# from werkzeug.security import generate_password_hash, check_password_hash
-# from requests_oauthlib import OAuth1
-# from jwt import DecodeError, ExpiredSignature
-
 
 class FlaskAuthenticationRouter:
     def __init__(self, user_repository, password_hasher, flask_app):

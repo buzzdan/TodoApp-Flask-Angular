@@ -1,6 +1,6 @@
 from flask import Flask, send_from_directory
 from flask_restful import Api
-from Server.Infrastructure.Data import InMemoryTodoRepository
+from Server.Infrastructure.Data import InMemoryTodoRepository, MongoDbTodoRepository
 from Server.Infrastructure.Data.InMemoryUserRepository import InMemoryUserRepository
 from Server.Infrastructure.Framework.ApiResources import TodoList
 from Server.Infrastructure.Framework.ApiResources import Todo
@@ -23,7 +23,7 @@ class AppStarter():
         self._api = Api(self._app)
 
     def _register_static_server(self, static_files_root_folder_path):
-        self._static_files_root_folder_path = static_files_root_folder_path + '/js/satellizer'
+        self._static_files_root_folder_path = static_files_root_folder_path  # + '/js/satellizer'  # <-- Use this to run sattilizer
         self._app.add_url_rule('/<path:file_relative_path_to_root>', 'serve_page', self._serve_page, methods=['GET'])
         self._app.add_url_rule('/', 'index', self._goto_index, methods=['GET'])
 
@@ -38,8 +38,8 @@ class AppStarter():
         db_url = self._environment_settings_loader['MONGOLAB_URI']
         print(db_url)
 
-        # todo_repo = MongoDbTodoRepository(db_url)
-        todo_repo = InMemoryTodoRepository()
+        todo_repo = MongoDbTodoRepository(db_url)
+        # todo_repo = InMemoryTodoRepository()
         todo = Todo.create(todo_repo)
         todo_list = TodoList.create(todo_repo)
         profile = Profile.create(userRepo)
