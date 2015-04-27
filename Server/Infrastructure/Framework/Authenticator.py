@@ -1,18 +1,10 @@
-# from requests.packages.urllib3.exceptions import DecodeError
 import os
-from urllib.parse import parse_qsl
 from datetime import datetime, timedelta
-import json
 from functools import wraps
 import jwt
-import requests
 from flask import g, request, jsonify, Flask
 from jwt import DecodeError, ExpiredSignatureError
-# from urlparse import parse_qs, parse_qsl
-# from urllib import urlencode
-# from requests_oauthlib import OAuth1
 from Server.Domain.Core import InvalidInstantiationError
-
 from Server.Infrastructure.Services import EnvironmentSettingsLoader
 
 
