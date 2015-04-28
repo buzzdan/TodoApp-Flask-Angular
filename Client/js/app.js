@@ -1,4 +1,4 @@
-alert('hi' + appConfigs.env)
+console.log('hi ' + appConfigs.env)
 angular.module('MyApp', ['ngResource', 'ngMessages', 'ui.router', 'mgcrea.ngStrap', 'satellizer'])
   .config(function($stateProvider, $urlRouterProvider, $authProvider) {
     $stateProvider
