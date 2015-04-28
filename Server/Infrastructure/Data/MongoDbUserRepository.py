@@ -42,35 +42,37 @@ class MongoDbUserRepository(IUserRepository):
     def _from_json(self, user):
         if user is None:
             return None
+
+        # user = dict(user)
         u = User()
-        if user.get("user_id", default=None):
+        if user.get("user_id", None):
             u.id = user["user_id"]
 
-        if user.get("email", default=None):
+        if user.get("email", None):
             u.email = user["email"]
 
-        if user.get("display_name", default=None):
+        if user.get("display_name", None):
             u.display_name = user["display_name"]
 
-        if user.get("hashed_password", default=None):
+        if user.get("hashed_password", None):
             u.hashed_password = user["hashed_password"]
 
-        if user.get("facebook", default=None):
+        if user.get("facebook", None):
             u.facebook = user["facebook"]
 
-        if user.get("google", default=None):
+        if user.get("google", None):
             u.google = user["google"]
 
-        if user.get("twitter", default=None):
+        if user.get("twitter", None):
             u.twitter = user["twitter"]
 
-        if user.get("github", default=None):
+        if user.get("github", None):
             u.github = user["github"]
 
-        if user.get("pic_link", default=None):
+        if user.get("pic_link", None):
             u.pic_link = user["pic_link"]
 
-        if user.get("linkedin", default=None):
+        if user.get("linkedin", None):
             u.linkedin = user["linkedin"]
 
         return u

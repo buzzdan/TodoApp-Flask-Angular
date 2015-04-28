@@ -43,7 +43,7 @@ class FlaskAuthenticationRouter:
     # @app.route('/auth/signup', methods=['POST'])
     def signup(self):
         hashed_password = self._password_hasher.encode(request.json['password'])
-        user = User(email=request.json['email'], hashed_password=hashed_password)
+        user = User(email=request.json['email'], hashed_password=hashed_password, display_name=request.json['displayName'])
         self._user_repository.add(user)
         token = create_token(user)
         return jsonify(token=token)
