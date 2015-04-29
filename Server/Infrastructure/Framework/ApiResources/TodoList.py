@@ -1,7 +1,11 @@
+import json
+from flask import g
 from flask_restful import reqparse, Resource
+from Server.Application.ListManagementService import ListManagementService
 from Server.Domain.Entities import TodoTask
+from Server.Infrastructure.Framework.Authenticator import login_required
 from Server.Infrastructure.Framework.DTOs import TodoDTO
-from Server.Domain.Interfaces import ITodoRepository
+from Server.Domain.Interfaces import ITodoRepository, ITodoListRepository
 from Server.Domain.Core import must_have
 
 
@@ -11,25 +15,31 @@ class TodoList(Resource):
     def __init__(self):
 
         must_have(self,
-                  member="_todo_repository",
-                  of_type=ITodoRepository,
+                  member="_list_management_service",
+                  of_type=ListManagementService,
                   use_method=TodoList.create.__name__)
 
         self._parser = reqparse.RequestParser()
         self._parser.add_argument('task', type=str)
 
     @classmethod
-    def create(cls, todo_repository):
+    def create(cls, list_management_service: ListManagementService):
         """
         :param todo_repository: an instance of ITodoRepository
         :return: class object of Todo Resource
         """
-        cls._todo_repository = todo_repository
+        cls._list_management_service = list_management_service
         return cls
 
+    @login_required
     def get(self):
-        todos = self._todo_repository.get_all()
-        return self.toJson(todos)
+        my_lists = self._list_management_service.get_my_lists_metadata(g.user_id)
+        default_list = next(iter(my_lists), None)
+        if not default_list:
+            return json.dumps(dict())
+        else:
+            todos = self._list_management_service.get_list(default_list.get_id()).get_todos()
+            return self.toJson(todos)
 
     def post(self):
         args = self._parser.parse_args()

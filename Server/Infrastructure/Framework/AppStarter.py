@@ -1,6 +1,7 @@
 from flask import Flask, send_from_directory
 from flask_restful import Api
-from Server.Infrastructure.Data import InMemoryTodoRepository, MongoDbTodoRepository
+from Server.Application.ListManagementService import ListManagementService
+from Server.Infrastructure.Data import InMemoryTodoRepository, MongoDbTodoRepository, MongoDbTodoListRepository
 from Server.Infrastructure.Data.InMemoryUserRepository import InMemoryUserRepository
 from Server.Infrastructure.Data.MongoDbUserRepository import MongoDbUserRepository
 from Server.Infrastructure.Framework.ApiResources import TodoList
@@ -28,12 +29,6 @@ class AppStarter():
         self._app.add_url_rule('/<path:file_relative_path_to_root>', 'serve_page', self._serve_page, methods=['GET'])
         self._app.add_url_rule('/', 'index', self._goto_index, methods=['GET'])
 
-
-
-
-
-
-
     def register_routes_to_resources(self, static_files_root_folder_path):
         self._register_static_server(static_files_root_folder_path)
 
@@ -45,10 +40,13 @@ class AppStarter():
         self.authenticator = FlaskAuthenticationRouter(userRepo, hasher, self._app)
         self.authenticator.register_routes()
 
-        todo_repo = MongoDbTodoRepository(db_url)
+        todo_list_repo = MongoDbTodoListRepository(db_url)
+        list_service = ListManagementService(todo_list_repo)
+        todo_list = TodoList.create(list_service)
+
         # todo_repo = InMemoryTodoRepository()
+        todo_repo = MongoDbTodoRepository(db_url)
         todo = Todo.create(todo_repo)
-        todo_list = TodoList.create(todo_repo)
         profile = Profile.create(userRepo)
 
         self._api.add_resource(profile, '/api/me')

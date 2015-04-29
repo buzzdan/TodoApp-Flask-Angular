@@ -1,9 +1,8 @@
 from uuid import uuid1
-from werkzeug.security import generate_password_hash, check_password_hash
 
 
 class User():
-    def __init__(self, id=None, email=None, hashed_password=None, display_name=None,
+    def __init__(self, email=None, hashed_password=None, display_name=None,
                  facebook=None, github=None, google=None, linkedin=None,
                  twitter=None, pic_link=None):
         self.id = str(uuid1())
