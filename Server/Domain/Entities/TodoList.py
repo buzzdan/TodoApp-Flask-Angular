@@ -5,7 +5,7 @@ from Server.Domain.Entities import TodoTask, TodoTaskState
 
 
 class TodoList:
-    def __init__(self, name, owner_ids, todos, list_id: str=None):
+    def __init__(self, name, owner_ids, todos=[], list_id: str=None):
         pre_condition_arg(self, name, of_type=str)
         self._name = name
 

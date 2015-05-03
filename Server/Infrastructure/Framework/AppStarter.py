@@ -7,6 +7,7 @@ from Server.Infrastructure.Data.MongoDbUserRepository import MongoDbUserReposito
 from Server.Infrastructure.Framework.ApiResources import TodoList
 from Server.Infrastructure.Framework.ApiResources import Todo
 from Server.Infrastructure.Framework.ApiResources import Profile
+from Server.Infrastructure.Framework.ApiResources.TodoLists import TodoLists
 from Server.Infrastructure.Services import EnvironmentSettingsLoader, WerkzeugPasswordHasher, ConfigurationError
 from .FlaskAuthenticationRouter import FlaskAuthenticationRouter
 from Server.Domain.Core import pre_condition_arg
@@ -43,6 +44,7 @@ class AppStarter():
         todo_list_repo = MongoDbTodoListRepository(db_url)
         list_service = ListManagementService(todo_list_repo)
         todo_list = TodoList.create(list_service)
+        todo_lists = TodoLists.create(list_service)
 
         # todo_repo = InMemoryTodoRepository()
         todo_repo = MongoDbTodoRepository(db_url)
@@ -50,8 +52,9 @@ class AppStarter():
         profile = Profile.create(userRepo)
 
         self._api.add_resource(profile, '/api/me')
-        self._api.add_resource(todo, '/api/todos/<todo_id>')
-        self._api.add_resource(todo_list, '/api/todos')
+        self._api.add_resource(todo_lists, '/api/todo_lists')
+        self._api.add_resource(todo_list, '/api/todo_lists/<list_id>')
+        self._api.add_resource(todo, '/api/todo_lists/<list_id>/todos/<todo_id>')
 
     def _goto_index(self):
         return self._serve_page("index.html")

@@ -8,7 +8,7 @@ from Server.Infrastructure.Framework.DTOs import TodoDTO
 from Server.Domain.Core import must_have
 
 
-class TodoList(Resource):
+class TodoLists(Resource):
     """shows a list of all todos, and lets you POST to add new tasks
     """
     def __init__(self):
@@ -16,7 +16,7 @@ class TodoList(Resource):
         must_have(self,
                   member="_list_management_service",
                   of_type=ListManagementService,
-                  use_method=TodoList.create.__name__)
+                  use_method=TodoLists.create.__name__)
 
         self._parser = reqparse.RequestParser()
         self._parser.add_argument('listName', type=str)
@@ -31,26 +31,25 @@ class TodoList(Resource):
         return cls
 
     @login_required
-    def get(self, list_id):
+    def get(self):
         """
-        :param list_id: specific list to get
-        :return: list by id.
+        :return: all lists Metadata
         """
-        my_list = self._list_management_service.get_list(list_id)
-        return my_list.to_json()
+        my_lists = self._list_management_service.get_my_lists_metadata(g.user_id)
+        return json.dumps(dict(my_lists))
 
     @login_required
-    def post(self, list_id):
+    def post(self):
         """
-        Creates a new todo task in a specific list
+        Creates a new list with authorized user as the owner
         :return: creation approval
         """
+        args = self._parser.parse_args()
+        list_name = args['listName']
+
         try:
-            args = self._parser.parse_args()
-            task_name = args['task']
-            self._list_management_service.add_task_to_list(list_id, task_name)
-            up_to_dated_list = self._list_management_service.get_list(list_id)
-            return up_to_dated_list.to_json(), 201
+            self._list_management_service.create_new_list(list_name, g.user_id)
+            return "New list created", 201
 
         except Exception as ex:
             return "Input error: {}".format(ex), 500  # General Error
@@ -60,4 +59,3 @@ class TodoList(Resource):
 
     # def toJson(self, todos):
     #     return [TodoDTO(todo).to_json() for todo in todos]
-

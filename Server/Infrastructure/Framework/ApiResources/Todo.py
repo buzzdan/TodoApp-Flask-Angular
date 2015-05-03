@@ -1,6 +1,6 @@
 from flask_restful import reqparse, abort, Resource
+from Server.Application import ListManagementService
 from Server.Infrastructure.Framework.DTOs import TodoDTO
-from Server.Domain.Interfaces import ITodoRepository
 from Server.Domain.Core.GeneralUtils import *
 
 
@@ -11,57 +11,58 @@ class Todo(Resource):
     def __init__(self):
 
         must_have(self,
-                  member="_todo_repository",
-                  of_type=ITodoRepository,
+                  member="_list_management_service",
+                  of_type=ListManagementService,
                   use_method=Todo.create.__name__)
 
         self._parser = reqparse.RequestParser()
         self._parser.add_argument('task', type=str)
 
     @classmethod
-    def create(cls, todo_repository):
+    def create(cls, list_management_service):
         """
-        :param todo_repository: an instance of ITodoRepository
+        @type list_management_service: ListManagementService
         :return: class object of Todo Resource
         """
-        cls._todo_repository = todo_repository
+        cls._list_management_service = list_management_service
         return cls
 
-    def abort_doesnt_exist(self, todo_id):
-        abort(404, message="Todo {} doesn't exist".format(todo_id))
+    def abort_doesnt_exist(self, message):
+        abort(404, message=message)
 
-    def get(self, todo_id):
+    def get(self, list_id, todo_id):
         try:
-            maybe = self._todo_repository.get_by_id(todo_id)
-            if maybe.exists():
-                return TodoDTO(maybe.values()[0]).to_json()
-            else:
-                self.abort_doesnt_exist(todo_id)
+            todo = self._list_management_service.get_todo_from_list(list_id, todo_id)
+            return TodoDTO(todo).to_json()
+
+        except KeyError as ex:
+            self.abort_doesnt_exist("{}".format(ex))
+
         except Exception as e:
             abort(500, message="{}".format(e))
 
-    def delete(self, todo_id):
+    def delete(self, list_id, todo_id):
         try:
-            self._todo_repository.delete(todo_id)
+            self._list_management_service.delete_task_from_list(list_id, todo_id)
             return '', 204
-        except KeyError:
-            self.abort_doesnt_exist(todo_id)
+        except KeyError as ex:
+            self.abort_doesnt_exist("{}".format(ex))
         except Exception as e:
             abort(500, message="{}".format(e))
 
-    def put(self, todo_id):
+    def put(self, list_id, todo_id):
         args = self._parser.parse_args()
         task_name = args['task']
 
         try:
-            self._todo_repository.update(todo_id, task_name)
+            self._list_management_service.update_todo(list_id, todo_id, task_name)
             todo = TodoDTO()
             todo.id = todo_id
             todo.task = task_name
             return todo.to_json(), 201
 
-        except KeyError:
-            self.abort_doesnt_exist(todo_id)
+        except KeyError as ex:
+            self.abort_doesnt_exist("{}".format(ex))
 
         except ValueError as error:
             return "Input error: {}".format(error), 422  # HTTP error for Unprocessable Entity
