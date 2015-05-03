@@ -52,9 +52,9 @@ class AppStarter():
         profile = Profile.create(userRepo)
 
         self._api.add_resource(profile, '/api/me')
-        self._api.add_resource(todo_lists, '/api/todo_lists')
-        self._api.add_resource(todo_list, '/api/todo_lists/<list_id>')
-        self._api.add_resource(todo, '/api/todo_lists/<list_id>/todos/<todo_id>')
+        self._api.add_resource(todo_lists, '/api/todolists')
+        self._api.add_resource(todo_list, '/api/todolists/<list_id>')
+        self._api.add_resource(todo, '/api/todolists/<list_id>/todos/<todo_id>')
 
     def _goto_index(self):
         return self._serve_page("index.html")

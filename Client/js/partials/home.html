@@ -4,15 +4,27 @@
 
             <!-- HEADER AND TODO COUNT -->
             <div class="jumbotron text-center">
-                <h1>I'm a Todo-aholic <span class="label label-info">{{ todos.length }}</span></h1>
+                <h1>I'm a Todo-aholic <span class="label label-info">{{ todoLists.length }}</span></h1>
+            </div>
+
+            <!-- TODO LIST DropDown-->
+            <div class="btn-group" dropdown is-open="status.isopen">
+                  <button type="button" class="btn btn-primary dropdown-toggle" dropdown-toggle ng-disabled="disabled">
+                    Load list <span class="caret"></span>
+                  </button>
+                  <ul class="dropdown-menu" role="menu" ng-repeat="todoList in todoLists">
+                    <li ng-click="alert(todoList.id)">{{ todoList.name }}</li>
+                    <li class="divider"></li>
+                    <li ng-click="alert('new')">Create new list</li>
+                  </ul>
             </div>
 
             <!-- TODO LIST -->
-            <div id="todo-list" class="row">
+            <div id="todo-list" class="row" ng-if="currentList">
                 <div class="col-sm-4 col-sm-offset-4">
 
                     <!-- LOOP OVER THE TODOS IN $scope.todos -->
-                    <div class="checkbox" ng-repeat="todo in todos">
+                    <div class="checkbox" ng-repeat="todo in currentList.todos">
                         <label>
                             <input type="checkbox" ng-click="deleteTodo(todo.id)"> {{ todo.task }}
                         </label>

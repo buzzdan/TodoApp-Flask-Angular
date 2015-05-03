@@ -53,8 +53,13 @@ class TodoList:
     def get_id(self):
         return self._list_id
 
-    def to_json(self):
-        todo_jsons = [todo.to_json() for todo in self._todos]
-        todos_json = str.join("\n", todo_jsons)
+    def to_dict(self):
+        todo_jsons = [todo.to_dict() for todo in self._todos]
+        todos_json = json.dumps(todo_jsons)
         owner_ids = json.dumps(self._owner_ids)
-        return '"list_id":"{}", "name":"{}", "owner_ids":"{}", "todos":"{}"'.format(self._list_id, self._name, owner_ids, todos_json)
+        final_string = {"list_id": self._list_id, "name": self._name, "owner_ids": self._owner_ids, "todos": todo_jsons}
+        return final_string
+
+    def to_json(self):
+        real_json = json.dumps(self.to_dict())
+        return real_json

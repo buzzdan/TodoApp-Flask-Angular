@@ -1,4 +1,5 @@
 from enum import Enum
+import json
 from uuid import uuid1
 
 
@@ -44,5 +45,10 @@ class TodoTask:
         if task_name is None or task_name.strip() == '':
             raise ValueError("task name cannot be empty")
 
+    def to_dict(self):
+        self_dict = {"task_id": self._id, "task_name": self._task_name}
+        return self_dict
+
     def to_json(self):
-        return '{"task_id":"{0}", "task_name": "{1}"}'.format(self._id, self._task_name)
+        real_json = json.dumps(self.to_dict())
+        return real_json

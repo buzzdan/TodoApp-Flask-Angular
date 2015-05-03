@@ -4,7 +4,7 @@ from flask_restful import reqparse, Resource
 from Server.Application.ListManagementService import ListManagementService
 from Server.Domain.Entities import TodoTask
 from Server.Infrastructure.Framework.Authenticator import login_required
-from Server.Infrastructure.Framework.DTOs import TodoDTO
+from Server.Infrastructure.Framework.DTOs import TodoDTO, TodoListDTO
 from Server.Domain.Core import must_have
 
 
@@ -36,7 +36,7 @@ class TodoLists(Resource):
         :return: all lists Metadata
         """
         my_lists = self._list_management_service.get_my_lists_metadata(g.user_id)
-        return json.dumps(dict(my_lists))
+        return self.toJson(my_lists)
 
     @login_required
     def post(self):
@@ -57,5 +57,5 @@ class TodoLists(Resource):
         except ValueError as e:
             return "Input error: {}".format(e), 422  # HTTP error for Unprocessable Entity
 
-    # def toJson(self, todos):
-    #     return [TodoDTO(todo).to_json() for todo in todos]
+    def toJson(self, lists):
+        return [TodoListDTO(todo_list).to_json() for todo_list in lists]
