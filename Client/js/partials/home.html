@@ -1,10 +1,10 @@
-<div ng-controller="mainController">
+<div>
     <div class="container">
 
 
             <!-- HEADER AND TODO COUNT -->
             <div class="jumbotron text-center">
-                <h1>I'm a Todo-aholic <span class="label label-info">{{ todoLists.length }}</span></h1>
+                <h2>I'm a Todo-aholic with <span class="label label-info">{{ todoLists.length }}</span> todo lists!</h2>
             </div>
 
             <!-- TODO LIST DropDown-->
@@ -12,17 +12,18 @@
                   <button type="button" class="btn btn-primary dropdown-toggle" dropdown-toggle ng-disabled="disabled">
                     Load list <span class="caret"></span>
                   </button>
-                  <ul class="dropdown-menu" role="menu" ng-repeat="todoList in todoLists">
-                    <li ng-click="alert(todoList.id)">{{ todoList.name }}</li>
+                  <ul class="dropdown-menu" role="menu">
+                    <li ng-repeat="todoList in todoLists" ng-click="loadList(todoList.id)">{{ todoList.name }}</li>
                     <li class="divider"></li>
                     <li ng-click="alert('new')">Create new list</li>
                   </ul>
             </div>
 
+
             <!-- TODO LIST -->
             <div id="todo-list" class="row" ng-if="currentList">
                 <div class="col-sm-4 col-sm-offset-4">
-
+                    <h2>{{ currentList.name }} todo list!</h2>
                     <!-- LOOP OVER THE TODOS IN $scope.todos -->
                     <div class="checkbox" ng-repeat="todo in currentList.todos">
                         <label>

@@ -1,4 +1,5 @@
 from Server.Domain.Core import Jsonable
+from Server.Infrastructure.Framework.DTOs import TodoDTO
 
 
 class TodoListDTO(Jsonable):
@@ -11,4 +12,4 @@ class TodoListDTO(Jsonable):
             self.id = todo_list.get_id()
             self.name = todo_list.get_name()
             self.owner_ids = todo_list.get_owner_ids()
-            self.todos = todo_list.get_todos()
+            self.todos = [TodoDTO(todo) for todo in todo_list.get_todos()]

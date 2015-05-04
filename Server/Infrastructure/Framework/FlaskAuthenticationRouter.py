@@ -33,7 +33,7 @@ class FlaskAuthenticationRouter:
         maybe_user = self._user_repository.get_by_email(email=request.json['email'])
         if maybe_user.exists():
             user = maybe_user.values()[0]
-        if not maybe_user.exists() or not self._password_hasher.verify(request.json['password'], user.hashed_password):
+        if not maybe_user.exists() or not user.hashed_password or not self._password_hasher.verify(request.json['password'], user.hashed_password):
             response = jsonify(message='Wrong Email or Password')
             response.status_code = 401
             return response

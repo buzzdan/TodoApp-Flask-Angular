@@ -4,7 +4,7 @@ from flask_restful import reqparse, Resource
 from Server.Application.ListManagementService import ListManagementService
 from Server.Domain.Entities import TodoTask
 from Server.Infrastructure.Framework.Authenticator import login_required
-from Server.Infrastructure.Framework.DTOs import TodoDTO
+from Server.Infrastructure.Framework.DTOs import TodoDTO, TodoListDTO
 from Server.Domain.Core import must_have
 
 
@@ -37,7 +37,7 @@ class TodoList(Resource):
         :return: list by id.
         """
         my_list = self._list_management_service.get_list(list_id)
-        return my_list.to_json()
+        return TodoListDTO(my_list).to_json()
 
     @login_required
     def post(self, list_id):
@@ -50,7 +50,7 @@ class TodoList(Resource):
             task_name = args['task']
             self._list_management_service.add_task_to_list(list_id, task_name)
             up_to_dated_list = self._list_management_service.get_list(list_id)
-            return up_to_dated_list.to_json(), 201
+            return TodoListDTO(up_to_dated_list).to_json(), 201
 
         except Exception as ex:
             return "Input error: {}".format(ex), 500  # General Error

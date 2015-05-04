@@ -6,12 +6,11 @@ class User():
                  facebook=None, github=None, google=None, linkedin=None,
                  twitter=None, pic_link=None):
         self.id = str(uuid1())
+        self.email = email
         if email:
             self.email = email.lower()
-        if hashed_password:
-            self.hashed_password = hashed_password
-        if display_name:
-            self.display_name = display_name
+        self.hashed_password = hashed_password
+        self.display_name = display_name
         self.facebook = facebook
         self.github = github
         self.google = google
