@@ -39,7 +39,7 @@ class TodoTask:
         self._state = TodoTaskState.Modified
 
     def delete_task(self):
-        self._state = TodoTaskState
+        self._state = TodoTaskState.Deleted
 
     def validate(self, task_name):
         if task_name is None or task_name.strip() == '':

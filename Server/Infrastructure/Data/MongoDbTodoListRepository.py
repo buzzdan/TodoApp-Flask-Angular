@@ -52,9 +52,24 @@ class MongoDbTodoListRepository(ITodoListRepository):
         bulk = todo_collection.initialize_ordered_bulk_op()
         for todo in todo_list.get_todos():
             if todo.get_state() == TodoTaskState.Added:
-                bulk.insert(todo.to_json())
+                bulk\
+                    .find({"list_id": todo_list.get_id()})\
+                    .update({"$push": {'todos': todo.to_dict()}})
             if todo.get_state() == TodoTaskState.Modified:
-                bulk.find({"todo_id": todo.get_id()}).update(todo.to_json())
+                bulk\
+                    .find({"$and": [{"list_id": todo_list.get_id()}, {"todos": {"$elemMatch": {"task_id": todo.get_id()}}}]})\
+                    .update({"$set": {'todos.$': todo.to_dict()}})
             if todo.get_state() == TodoTaskState.Deleted:
-                bulk.find({"todo_id": todo.get_id()}).remove()
+                bulk\
+                    .find({"list_id": todo_list.get_id()})\
+                    .update({"$pull": {'todos': {"task_id": todo.get_id()}}})
+
+            # if todo.get_state() == TodoTaskState.Modified:
+            #     bulk\
+            #         .find({"todos": {"$elemMatch": {"task_id": todo.get_id()}}})\
+            #         .update({"$set": {'todos.$': todo.to_json()}})
+            # if todo.get_state() == TodoTaskState.Deleted:
+            #     bulk\
+            #         .find({"todos": {"$elemMatch": {"task_id": todo.get_id()}}})\
+            #         .update({"pull": {'todos.$': todo.to_json()}})
         bulk.execute()

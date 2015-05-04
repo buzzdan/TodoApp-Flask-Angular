@@ -38,11 +38,11 @@ angular.module('MyApp')
     };
 
     // when submitting the add form, send the text to the node API
-    $scope.createTodo = function() {
-        $http.post('/api/todos', $scope.formData)
+    $scope.createTodo = function(listId) {
+        $http.post('/api/todolists/'+listId, $scope.formData)
             .success(function(data) {
                 $scope.formData = {}; // clear the form so our user is ready to enter another
-                $scope.todos = data;
+                $scope.currentList = data;
                 console.log(data);
             })
             .error(function(data) {
@@ -55,11 +55,11 @@ angular.module('MyApp')
         array.splice(elementPos, 1);
     }
     // delete a todo after checking it
-    $scope.deleteTodo = function(id) {
-        $http.delete('/api/todos/' + id)
+    $scope.deleteTodo = function(listId, todoId) {
+        $http.delete('/api/todolists/'+listId+'/todos/' + todoId)
             .success(function(data) {
-                removeFromArray($scope.todos, id);
-                console.log($scope.todos);
+                removeFromArray($scope.currentList.todos, todoId);
+                console.log($scope.currentList.todos);
             })
             .error(function(data) {
                 console.log('Error: ' + data);

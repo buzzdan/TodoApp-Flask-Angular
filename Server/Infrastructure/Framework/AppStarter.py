@@ -47,8 +47,8 @@ class AppStarter():
         todo_lists = TodoLists.create(list_service)
 
         # todo_repo = InMemoryTodoRepository()
-        todo_repo = MongoDbTodoRepository(db_url)
-        todo = Todo.create(todo_repo)
+        # todo_repo = MongoDbTodoRepository(db_url)
+        todo = Todo.create(list_service)
         profile = Profile.create(userRepo)
 
         self._api.add_resource(profile, '/api/me')

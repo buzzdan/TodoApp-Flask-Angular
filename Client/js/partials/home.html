@@ -27,7 +27,7 @@
                     <!-- LOOP OVER THE TODOS IN $scope.todos -->
                     <div class="checkbox" ng-repeat="todo in currentList.todos">
                         <label>
-                            <input type="checkbox" ng-click="deleteTodo(todo.id)"> {{ todo.task }}
+                            <input type="checkbox" ng-click="deleteTodo(currentList.id, todo.id)"> {{ todo.task }}
                         </label>
                     </div>
 
@@ -35,7 +35,7 @@
             </div>
 
             <!-- FORM TO CREATE TODOS -->
-            <div id="todo-form" class="row">
+            <div id="todo-form" class="row" ng-if="currentList">
                 <div class="col-sm-8 col-sm-offset-2 text-center">
                     <form>
                         <div class="form-group">
@@ -45,7 +45,7 @@
                         </div>
 
                         <!-- createToDo() WILL CREATE NEW TODOS -->
-                        <button type="submit" class="btn btn-primary btn-lg" ng-click="createTodo()">Add</button>
+                        <button type="submit" class="btn btn-primary btn-lg" ng-click="createTodo(currentList.id)">Add</button>
                     </form>
                 </div>
             </div>

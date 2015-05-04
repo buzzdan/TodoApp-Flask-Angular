@@ -19,7 +19,7 @@ class TodoList(Resource):
                   use_method=TodoList.create.__name__)
 
         self._parser = reqparse.RequestParser()
-        self._parser.add_argument('listName', type=str)
+        self._parser.add_argument('task', type=str)
 
     @classmethod
     def create(cls, list_management_service: ListManagementService):
