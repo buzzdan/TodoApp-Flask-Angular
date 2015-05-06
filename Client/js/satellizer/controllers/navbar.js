@@ -15,11 +15,14 @@ angular.module('MyApp')
       Account.getProfile()
         .success(function(data) {
           $scope.user = data;
-          if(data.picture.contains("?type=large")){
+          if(data.picture.indexOf("?type=large") > -1){
             $scope.user.picture = data.picture.replace("?type=large","");
           }
+          gotUser = true;
+          isGettingUser = false;
         })
         .error(function(error) {
+          gotUser = false;
           $alert({
             content: error.message,
             animation: 'fadeZoomFadeDown',
