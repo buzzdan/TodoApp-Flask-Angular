@@ -1,6 +1,11 @@
 console.log('hi ' + appConfigs.env);
-angular.module('MyApp', ['ngResource', 'ui.bootstrap','ngMessages', 'ui.router', 'mgcrea.ngStrap', 'satellizer'])
-  .config(function($stateProvider, $urlRouterProvider, $authProvider) {
+angular.module('MyApp', ['ngResource', 'ui.bootstrap','ngMessages', 'ui.router', 'mgcrea.ngStrap', 'satellizer', 'newListModalService'])
+  .config(function($stateProvider, $urlRouterProvider, $authProvider, $modalProvider) {
+
+    angular.extend($modalProvider.defaults, {
+        html: true
+    });
+
     $stateProvider
       .state('home', {
         url: '/',

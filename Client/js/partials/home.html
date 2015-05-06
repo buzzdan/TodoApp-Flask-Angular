@@ -15,7 +15,7 @@
                   <ul class="dropdown-menu" role="menu">
                     <li ng-repeat="todoList in todoLists" ng-click="loadList(todoList.id)">{{ todoList.name }}</li>
                     <li class="divider"></li>
-                    <li ng-click="alert('new')">Create new list</li>
+                    <li ng-click="openNewListModal()">Create new list</li>
                   </ul>
             </div>
 

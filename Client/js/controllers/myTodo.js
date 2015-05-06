@@ -1,8 +1,9 @@
+//var myApp = angular.module("MyApp",['newListModalService','mgcrea.ngStrap']);
 angular.module('MyApp')
-  .controller('mainController', function($scope, $alert, $auth, $http) {
+  .controller('mainController', function($scope, $alert, $auth, $http, $newListModal) {
     $scope.formData = {};
 
-    // when landing on the page, get all todos and show them
+     // when landing on the page, get all todos and show them
     $http.get('/api/todolists')
         .success(function(data) {
             $scope.todoLists = data;
@@ -12,16 +13,42 @@ angular.module('MyApp')
             console.log('Error: ' + data);
         });
 
-    $scope.loadList = function(id) {
-        $http.get('/api/todolists/'+id)
-            .success(function(data) {
-                $scope.currentList = data;
-                console.log(data);
-            })
-            .error(function(data) {
-                console.log('Error: ' + data);
-            });
+    //MODAL
+//    var myOtherModal = $modal({scope: $scope, template: 'js/partials/createNewListModal.html', show: false});
+//    $scope.openNewListModal = function () {
+//
+//        myOtherModal.$promise.then(myOtherModal.show);
+//    };
+    //MODAL
+
+    $scope.openNewListModal = function(){
+        $newListModal.show();
     };
+    $scope.$on("login", function(){
+      $newListModal.hide();
+    });
+//    $scope.createNewList = function(listName){
+//            $modal.open
+//        $http.post('/api/todolists/'+listId, $scope.formData)
+//            .success(function(data) {
+//                $scope.formData = {}; // clear the form so our user is ready to enter another
+//                $scope.currentList = data;
+//                console.log(data);
+//            })
+//            .error(function(data) {
+//                console.log('Error: ' + data);
+//            });
+//    }
+     $scope.loadList = function(id) {
+            $http.get('/api/todolists/'+id)
+                .success(function(data) {
+                    $scope.currentList = data;
+                    console.log(data);
+                })
+                .error(function(data) {
+                    console.log('Error: ' + data);
+                });
+        };
 
     $scope.status = {
         isopen: false

@@ -24,10 +24,31 @@
     <style>
         html                    { overflow-y:scroll; }
         #todo-list              { margin-bottom:30px; }
+        /* Fix for Bootstrap 3 with Angular UI Bootstrap */
+
+        .modal {
+            display: block;
+        }
+
+        /* Custom dialog/modal headers */
+
+        .dialog-header-error { background-color: #d2322d; }
+        .dialog-header-wait { background-color: #428bca; }
+        .dialog-header-notify { background-color: #eeeeee; }
+        .dialog-header-confirm { background-color: #333333; }
+        .dialog-header-error span, .dialog-header-error h4,
+        .dialog-header-wait span, .dialog-header-wait h4,
+        .dialog-header-confirm span, .dialog-header-confirm h4 { color: #ffffff; }
+
+        /* Ease Display */
+
+        .pad { padding: 25px; }
     </style>
 
     <!-- SPELLS -->
     <script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script><!-- load jquery -->
+    <!--<script src="http://angular-ui.github.io/bootstrap/ui-bootstrap-tpls-0.6.0.js" type="text/javascript"></script>-->
+    <!--<script src="http://m-e-conroy.github.io/angular-dialog-service/javascripts/dialogs.min.js" type="text/javascript"></script>-->
     <!--<script src="//ajax.googleapis.com/ajax/libs/angularjs/1.0.8/angular.min.js"></script>&lt;!&ndash; load angular &ndash;&gt;-->
     <!--<script src="js/app.js"></script>-->
 
@@ -74,6 +95,7 @@
          <script src="js/satellizer/directives/passwordMatch.js"></script>
          <script src="js/satellizer/controllers/login.js"></script>
          <script src="js/controllers/myTodo.js"></script>
+         <script src="js/controllers/newList.js"></script>
          <script src="js/satellizer/controllers/signup.js"></script>
          <script src="js/satellizer/controllers/logout.js"></script>
          <script src="js/satellizer/controllers/profile.js"></script>
