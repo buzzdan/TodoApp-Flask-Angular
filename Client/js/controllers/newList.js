@@ -15,7 +15,7 @@ angular.module('newListModalService',[]).
 
 angular.module('MyApp').controller('NewListController',['$scope','$rootScope', '$http',function ($scope, $rootScope, $http) {
   //$scope.newTodoList=  {};
-  newTodoList = {name : 'dan'};
+  newTodoList = {name : ''};
   $scope.newTodoList = newTodoList;
 
   $scope.authenticate = function(){

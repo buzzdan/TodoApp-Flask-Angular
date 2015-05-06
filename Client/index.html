@@ -58,7 +58,9 @@
   </div>
   <ul class="nav navbar-nav">
     <li><a href="/#/">Home</a></li>
-    <li ng-if="isAuthenticated()"><a href="/#/profile">Profile</a></li>
+    <li ng-if="isAuthenticated()">
+        <a href="/#/profile"><img ng-src="{{ user.picture }}" style="display:inline; width:20px"> {{ user.displayName }}</a>
+    </li>
   </ul>
   <ul ng-if="!isAuthenticated()" class="nav navbar-nav pull-right">
     <li><a href="/#/login">Login</a></li>

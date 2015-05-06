@@ -2,6 +2,7 @@
 angular.module('MyApp')
   .controller('mainController', function($scope, $alert, $auth, $http, $newListModal) {
     $scope.isAuthenticated = $auth.isAuthenticated();
+
     $scope.formData = {};
 
      // when landing on the page, get all todos and show them
