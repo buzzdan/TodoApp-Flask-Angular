@@ -73,7 +73,7 @@ angular.module('MyApp', ['ngResource', 'ui.bootstrap','ngMessages', 'ui.router',
     });
 
     $authProvider.live({
-      clientId: '000000004C12E68D'
+      clientId: appConfigs.liveClientId
     });
 
     $authProvider.oauth2({
