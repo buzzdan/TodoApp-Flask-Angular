@@ -116,6 +116,9 @@ class FlaskAuthenticationRouter:
         maybe_user_with_same_email = self._user_repository.get_by_email(email=profile['email'])  # Link accounts
         if maybe_user_with_same_email.exists():
             user = maybe_user_with_same_email.values()[0].copy_user()
+            user_already_have_facebook_id = user.facebook is not None and str(user.facebook).strip() != ''
+            if user_already_have_facebook_id:
+                raise KeyError("user already exist for this email address with another facebook account")
             user.facebook = profile['id']
             if user.display_name is None:
                 user.display_name = profile['name']

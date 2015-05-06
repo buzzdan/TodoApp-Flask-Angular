@@ -1,11 +1,10 @@
 <div>
-    <div class="container">
+    <div class="container" ng-if="isAuthenticated">
 
 
             <!-- HEADER AND TODO COUNT -->
             <div class="jumbotron text-center">
                 <h2>I'm a Todo-aholic with <span class="label label-info">{{ todoLists.length }}</span> todo lists!</h2>
-            </div>
 
             <!-- TODO LIST DropDown-->
             <div class="btn-group" dropdown is-open="status.isopen">
@@ -19,6 +18,7 @@
                   </ul>
             </div>
 
+            </div>
 
             <!-- TODO LIST -->
             <div id="todo-list" class="row" ng-if="currentList">
@@ -51,4 +51,5 @@
             </div>
 
         </div>
+    <div class="container" ng-if="!isAuthenticated"><h1>Please Login to start creating your own todo lists!</h1></div>
 </div>
