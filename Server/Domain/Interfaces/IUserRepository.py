@@ -21,6 +21,10 @@ class IUserRepository(object):
         pass
 
     @abstractmethod
+    def get_by_google_id(self, google_id):
+        pass
+
+    @abstractmethod
     def delete(self, _id):
         pass
 

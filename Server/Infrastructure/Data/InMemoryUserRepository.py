@@ -29,6 +29,14 @@ class InMemoryUserRepository(IUserRepository):
         else:
             return Maybe(value=user.copy_user())
 
+    def get_by_google_id(self, google_id):
+        user = next((u for u in self._users_db if u.google == google_id), None)
+        user_doesnt_exist = user is None
+        if user_doesnt_exist:
+            return Maybe(None)
+        else:
+            return Maybe(value=user.copy_user())
+
     def update(self, user_id, user):
         maybe_db_user = next((u for u in self._users_db if u.id == user_id), None)
         if maybe_db_user is not None:

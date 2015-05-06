@@ -13,6 +13,7 @@ class SecretAuthKeys:
         configs = self._get_configs()
         self.secret_token = configs['TOKEN_SECRET']
         self.facebook_secret = configs['FACEBOOK_SECRET']
+        self.google_secret = configs['GOOGLE_SECRET']
 
         if self.secret_token is None or str(self.secret_token).strip() == '':
             raise InvalidInstantiationError(type(self).__class__.__name__, "secrets.secret_token")

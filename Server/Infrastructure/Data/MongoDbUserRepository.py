@@ -33,6 +33,13 @@ class MongoDbUserRepository(IUserRepository):
         self._db_client.close()
         return Maybe(value=user)
 
+    def get_by_google_id(self, google_id):
+        users_collection = self._get_users_collection()
+        result = users_collection.find_one({"google": google_id})
+        user = self._from_json(result)
+        self._db_client.close()
+        return Maybe(value=user)
+
     def _get_users_collection(self):
         if not self._users_db:
             db = self._db_client.get_default_database()
@@ -141,31 +148,31 @@ class MongoDbUserRepository(IUserRepository):
         else:
             raise UserDoesntExistsError("invalid user_id")
 
-        if db_user.get("hashed_password", None) and db_user["hashed_password"] != user.hashed_password:
+        if db_user.get("hashed_password", None) != user.hashed_password:
             db_user["hashed_password"] = user.hashed_password
 
-        if db_user.get("facebook", None) and db_user["facebook"] != user.facebook:
+        if db_user.get("facebook", None) != user.facebook:
             db_user["facebook"] = user.facebook
 
-        if db_user.get("email", None) and db_user["email"] != user.email:
+        if db_user.get("email", None) != user.email:
             db_user["email"] = user.email
 
-        if db_user.get("twitter", None) and db_user["twitter"] != user.twitter:
+        if db_user.get("twitter", None) != user.twitter:
             db_user["twitter"] = user.twitter
 
-        if db_user.get("google", None) and db_user["google"] != user.google:
+        if db_user.get("google", None) != user.google:
             db_user["google"] = user.google
 
-        if db_user.get("github", None) and db_user["github"] != user.github:
+        if db_user.get("github", None) != user.github:
             db_user["github"] = user.github
 
-        if db_user.get("display_name", None) and db_user["display_name"] != user.display_name:
+        if db_user.get("display_name", None) != user.display_name:
             db_user["display_name"] = user.display_name
 
-        if db_user.get("pic_link", None) and db_user["pic_link"] != user.pic_link:
+        if db_user.get("pic_link", None) != user.pic_link:
             db_user["pic_link"] = user.pic_link
 
-        if db_user.get("linkedin", None) and db_user["linkedin"] != user.linkedin:
+        if db_user.get("linkedin", None) != user.linkedin:
             db_user["linkedin"] = user.linkedin
 
         users_collection.update({"user_id": user_id}, db_user)

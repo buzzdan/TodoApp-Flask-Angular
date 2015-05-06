@@ -27,6 +27,7 @@ class FlaskAuthenticationRouter:
         self._flask_app.add_url_rule('/auth/login', 'login', self.login, methods=['POST'])
         self._flask_app.add_url_rule('/auth/signup', 'signup', self.signup, methods=['POST'])
         self._flask_app.add_url_rule('/auth/facebook', 'facebook', self.facebook, methods=['POST'])
+        self._flask_app.add_url_rule('/auth/google', 'google', self.google, methods=['POST'])
 
     # @app.route('/auth/login', methods=['POST'])
     def login(self):
@@ -46,6 +47,53 @@ class FlaskAuthenticationRouter:
         user = User(email=request.json['email'], hashed_password=hashed_password, display_name=request.json['displayName'])
         self._user_repository.add(user)
         token = create_token(user)
+        return jsonify(token=token)
+
+    # @app.route('/auth/google', methods=['POST'])
+
+    def google(self):
+        access_token_url = 'https://accounts.google.com/o/oauth2/token'
+        people_api_url = 'https://www.googleapis.com/plus/v1/people/me/openIdConnect'
+
+        payload = dict(client_id=request.json['clientId'],
+                       redirect_uri=request.json['redirectUri'],
+                       client_secret=self._secrets.google_secret,
+                       code=request.json['code'],
+                       grant_type='authorization_code')
+
+        # Step 1. Exchange authorization code for access token.
+        r = requests.post(access_token_url, data=payload)
+        token = json.loads(r.text)
+        headers = {'Authorization': 'Bearer {0}'.format(token['access_token'])}
+
+        # Step 2. Retrieve information about the current user.
+        r = requests.get(people_api_url, headers=headers)
+        profile = json.loads(r.text)
+
+        maybe_user = self._user_repository.get_by_google_id(google_id=profile['sub'])
+        if maybe_user.exists():
+            user = maybe_user.values()[0]
+            token = create_token(user)
+            return jsonify(token=token)
+
+        maybe_user_with_same_email = self._user_repository.get_by_email(email=profile['email'])  # Link accounts
+        if maybe_user_with_same_email.exists():
+            user = maybe_user_with_same_email.values()[0].copy_user()
+            user_already_have_google_id = user.google is not None and str(user.google).strip() != ''
+            if user_already_have_google_id:
+                raise KeyError("user already exist for this email address with another facebook account")
+            user.google = profile['sub']
+            if user.display_name is None:
+                user.display_name = profile['name']
+            if user.pic_link is None:
+                user.pic_link = profile['picture']
+            self._user_repository.update(user.id, user)
+            token = create_token(user)
+            return jsonify(token=token)
+
+        u = User(facebook=profile['id'], display_name=profile['name'], email=profile['email'], pic_link=profile['image'])
+        self._user_repository.add(u)
+        token = create_token(u)
         return jsonify(token=token)
 
     def _create_facebook_pic_link(self, facebook_id):
@@ -90,10 +138,6 @@ class FlaskAuthenticationRouter:
                 response.status_code = 400
                 return response
 
-            # u = User(facebook=profile['id'], display_name=profile['name'])
-            # self._user_repository.add(u)
-            # token = create_token(u)
-            # return jsonify(token=token)
             user = maybe_user.values()[0]
             user.facebook = profile['id']
             user.display_name = profile['name']
@@ -192,36 +236,6 @@ class FlaskAuthenticationRouter:
 #     return jsonify(token=token)
 #
 #
-# @app.route('/auth/google', methods=['POST'])
-# def google():
-#     access_token_url = 'https://accounts.google.com/o/oauth2/token'
-#     people_api_url = 'https://www.googleapis.com/plus/v1/people/me/openIdConnect'
-#
-#     payload = dict(client_id=request.json['clientId'],
-#                    redirect_uri=request.json['redirectUri'],
-#                    client_secret=app.config['GOOGLE_SECRET'],
-#                    code=request.json['code'],
-#                    grant_type='authorization_code')
-#
-#     # Step 1. Exchange authorization code for access token.
-#     r = requests.post(access_token_url, data=payload)
-#     token = json.loads(r.text)
-#     headers = {'Authorization': 'Bearer {0}'.format(token['access_token'])}
-#
-#     # Step 2. Retrieve information about the current user.
-#     r = requests.get(people_api_url, headers=headers)
-#     profile = json.loads(r.text)
-#
-#     user = User.query.filter_by(google=profile['sub']).first()
-#     if user:
-#         token = create_token(user)
-#         return jsonify(token=token)
-#     u = User(google=profile['sub'],
-#              display_name=profile['name'])
-#     db.session.add(u)
-#     db.session.commit()
-#     token = create_token(u)
-#     return jsonify(token=token)
 #
 #
 # @app.route('/auth/linkedin', methods=['POST'])
