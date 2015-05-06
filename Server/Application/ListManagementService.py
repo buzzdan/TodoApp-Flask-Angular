@@ -52,3 +52,4 @@ class ListManagementService:
     def create_new_list(self, list_name, user_id):
         new_list = TodoList(list_name, [user_id])
         self._todo_list_repository.create(new_list)
+        return new_list

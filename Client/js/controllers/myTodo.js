@@ -24,21 +24,12 @@ angular.module('MyApp')
     $scope.openNewListModal = function(){
         $newListModal.show();
     };
-    $scope.$on("login", function(){
+    $scope.$on("newListCreated", function(event, newCreatedList){
       $newListModal.hide();
+      $scope.currentList = newCreatedList;
+      $scope.todoLists.push(newCreatedList);
     });
-//    $scope.createNewList = function(listName){
-//            $modal.open
-//        $http.post('/api/todolists/'+listId, $scope.formData)
-//            .success(function(data) {
-//                $scope.formData = {}; // clear the form so our user is ready to enter another
-//                $scope.currentList = data;
-//                console.log(data);
-//            })
-//            .error(function(data) {
-//                console.log('Error: ' + data);
-//            });
-//    }
+
      $scope.loadList = function(id) {
             $http.get('/api/todolists/'+id)
                 .success(function(data) {

@@ -42,7 +42,7 @@ class MongoDbTodoListRepository(ITodoListRepository):
 
     def create(self, new_list: TodoList):
         method_guard(self.create, new_list, of_type=TodoList)
-        list_json = new_list.to_json()
+        list_json = new_list.to_dict()
         todo_collection = self._get_todos_collection()
         todo_collection.insert(list_json)
 

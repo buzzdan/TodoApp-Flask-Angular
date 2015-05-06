@@ -48,8 +48,8 @@ class TodoLists(Resource):
         list_name = args['listName']
 
         try:
-            self._list_management_service.create_new_list(list_name, g.user_id)
-            return "New list created", 201
+            created_todo_list = self._list_management_service.create_new_list(list_name, g.user_id)
+            return TodoListDTO(created_todo_list).to_json(), 201
 
         except Exception as ex:
             return "Input error: {}".format(ex), 500  # General Error

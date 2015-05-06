@@ -1,52 +1,32 @@
 <div class="modal" id="$newListModal" role="dialog" ng-controller="NewListController">
 	<div class="modal-dialog">
 		<div class="modal-content">
-			<form id="userLogin" name="userLogin" role="form" class="form-horizontal">
+			<form id="newList" name="newList" role="form" class="form-horizontal">
 				<div class="modal-header">
 					<button type="button" class="close" data-dismiss="modal" ng-click="$hide()">&times;</button>
-					<h4 class="modal-title">Login</h4>
+					<h4 class="modal-title">Create New List</h4>
 				</div>
 				<div class="modal-body">
 					<div class="form-group">
 						<div class="col-md-3">
-							<label for="userName">User Name:</label>
+							<label for="listName">List Name:</label>
 							<input
 								type="text"
-								id="userName"
+								id="listName"
 								class="form-control"
-								name="userName"
-								placeholder="User Name"
+								name="listName"
+								placeholder="My home tasks list"
 								required
 								ng-minlength="3"
-								ng-model="user._id"
+								ng-model="newTodoList.name"
 								/>
 						</div>
 					</div>
-					<div class="form-group">
-						<div class="col-md-3">
-							<label for="password">Password:</label>
-							<input
-								type="password"
-								id="password"
-								name="password"
-								class="form-control input"
-								placeholder="Password"
-								required
-								ng-minlength="8"
-								ng-model="user.password"
-								/>
-						</div>
-					</div>
-					<div class="form-group">
-						<div class="col-md-3">
-							<input type="checkbox" id="remember" name="remember" />
-							<label for="remember"> Remember Me</label>
-						</div>
-					</div>
+
 					<span id="error" name="error" class="text-danger">{{loginError}}</span>
 				</div>
 				<div class="modal-footer">
-						<button ng-disabled="!userLogin.$valid"	ng-click="authenticate()" class="btn btn-primary">Log in</button>
+						<button ng-disabled="!newList.$valid" ng-click="createNewList(newTodoList.name)" class="btn btn-primary">Create List</button>
 				</div>
 			</form>
 		</div>
